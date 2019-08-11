@@ -1,0 +1,53 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+}
+
+nav a {
+  color: white;
+  text-decoration: underline;
+}
+nav a:hover {
+  text-decoration: none;
+}
+
+h1 {
+  color: white;
+  text-shadow: 0.1em 0.1em 0.1em black;
+}
+
+h2 {
+  margin: 0 0 1em 0;
+}
+
+header {
+  background-color: rgb(31, 142, 170);
+  padding: 1em;
+  text-align: center;
+}
+
+nav a {
+  margin-right: 1em;
+}
+
+main > div {
+  display: flex;
+  justify-content: center;
+}
+
+.box {
+  margin: 1em;
+  padding: 1em;
+  flex-basis: 20em;
+  border: 1px solid gray;
+  border-radius: 0.3em;
+}
+
+button {
+  margin: 0.5em;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5em;
+}
