@@ -2,7 +2,7 @@
 
 A super tiny JavaScript framework for web apps. It's just 0.5 kB minified and gzipped!
 
-⚠️ __Attention:__ This is an very early version and not ready for production!
+⚠️ __Attention:__ This is a very early version and not ready for production!
 
 ## Live Demo
 
