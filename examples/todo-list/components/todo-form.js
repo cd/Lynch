@@ -1,9 +1,11 @@
 (function() {
   "use strict";
 
+  // No further execution if Mojio is not available
   if (typeof Mojito !== "function" || !Mojito.components)
     throw new Error("Mojito not found");
 
+  // Register 'todoForm' component to Mojito
   Mojito.components.todoForm = function(selector, store) {
     return new Mojito(
       {

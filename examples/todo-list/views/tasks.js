@@ -5,7 +5,7 @@
   if (typeof Mojito !== "function" || !Mojito.components)
     throw new Error("Mojito not found");
 
-  // Register 'comp' component to Mojito
+  // Register 'viewTasks' component to Mojito
   Mojito.components.viewTasks = function(selector, store) {
     return new Mojito(
       {
@@ -22,38 +22,45 @@
           items: [
             {
               class: "todo",
-              text: "Test Item"
+              text: "Write documentation"
             },
             {
               class: "todo",
-              text: "Another Item..."
+              text: "Create more examples"
             },
             {
               class: "done",
-              text: "Make Sport"
+              text: "Create a super tiny framework"
             }
           ]
         },
 
         created: function(data, attributes, render, element) {
-          element.addEventListener("done", function(event) {
-            data.items[data.items.indexOf(event.detail.item)].class = 'done';
+          // For new items by component 'todo-list.js'
+          element.addEventListener("add", function(event) {
+            data.items.push({
+              text: event.detail.itemText,
+              class: "todo"
+            });
             window.sessionStorage.setItem("items", JSON.stringify(data.items));
             render();
           });
+
+          // For items to be moved to "done" section by component "toto-list.js"
+          element.addEventListener("done", function(event) {
+            data.items[data.items.indexOf(event.detail.item)].class = "done";
+            window.sessionStorage.setItem("items", JSON.stringify(data.items));
+            render();
+          });
+
+          // For items to be deleted by component "todo-list.js"
           element.addEventListener("remove", function(event) {
             data.items.splice(data.items.indexOf(event.detail.item), 1);
             window.sessionStorage.setItem("items", JSON.stringify(data.items));
             render();
           });
-          element.addEventListener("add", function(event) {
-            data.items.push({
-              text: event.detail.itemText,
-              class: 'todo'
-            });
-            window.sessionStorage.setItem("items", JSON.stringify(data.items));
-            render();
-          });
+
+          // Load items from session storage
           var storage = window.sessionStorage.getItem("items");
           if (storage) data.items = JSON.parse(storage);
         }

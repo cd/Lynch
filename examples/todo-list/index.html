@@ -9,13 +9,21 @@
   </head>
   <body>
     <div data-mojito-app data-mojito-view="tasks"></div>
+
+    <!-- Polyfill for IE -->
     <script src="../custom-event-polyfill.js"></script>
+
+    <!-- Mojito -->
     <script src="../../src/Mojito.js"></script>
+
+    <!-- Mojito Components -->
     <script src="./components/todo-form.js"></script>
     <script src="./components/todo-list.js"></script>
     <script src="./components/header.js"></script>
     <script src="./views/settings.js"></script>
     <script src="./views/tasks.js"></script>
+
+    <!-- Main App (Mojito Root Component) -->
     <script src="./app.js"></script>
   </body>
 </html>

@@ -5,7 +5,7 @@
   if (typeof Mojito !== "function" || !Mojito.components)
     throw new Error("Mojito not found");
 
-  // Register 'comp' component to Mojito
+  // Register 'todoList' component to Mojito
   Mojito.components.todoList = function(selector, store) {
     return new Mojito(
       {
@@ -57,6 +57,7 @@
           data.items = data._parent.items.filter(function(item) {
             return item.class === attributes.mojitoId;
           });
+
           render();
         }
       },

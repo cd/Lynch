@@ -1,9 +1,11 @@
 (function() {
   "use strict";
 
+  // No further execution if Mojio is not available
   if (typeof Mojito !== "function" || !Mojito.components)
     throw new Error("Mojito not found");
 
+  // Register 'header' component to Mojito
   Mojito.components.header = function(selector, store) {
     return new Mojito(
       {
@@ -22,13 +24,9 @@
           return html;
         },
 
-        data: {
-          // my data
-        },
+        data: {},
 
-        created: function(data, attributes, render, element) {
-          // main function
-        }
+        created: function(data, attributes, render, element) {}
       },
       selector,
       store

@@ -5,7 +5,7 @@
   if (typeof Mojito !== "function" || !Mojito.components)
     throw new Error("Mojito not found");
 
-  // Register 'comp' component to Mojito
+  // Register 'viewSettings' component to Mojito
   Mojito.components.viewSettings = function(selector, store) {
     return new Mojito(
       {
@@ -21,23 +21,20 @@
           }
           html +=
             ">" +
-            ' English</label>' +
-            "<label>" + 
+            " English</label>" +
+            "<label>" +
             '<input type="radio" id="de" name="language" value="1"';
           if (store.currentLanguage === 1) {
             html += " checked";
           }
-          html +=
-            ">" + ' Deutsch</label>' + "</div>";
+          html += ">" + " Deutsch</label>" + "</div>";
           return html;
         },
 
-        data: {
-          // my data
-        },
+        data: {},
 
         created: function(data, attributes, render, element) {
-          var languageHandler = function(event) {
+          element.addEventListener("click", function(event) {
             if (event.target.name !== "language") return;
             element.dispatchEvent(
               new CustomEvent("changeLanguage", {
@@ -47,8 +44,7 @@
                 }
               })
             );
-          };
-          element.addEventListener("click", languageHandler);
+          });
         }
       },
       selector,

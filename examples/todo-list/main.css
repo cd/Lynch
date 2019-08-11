@@ -6,6 +6,7 @@ body {
 nav a {
   color: white;
   text-decoration: underline;
+  margin-right: 1em;
 }
 nav a:hover {
   text-decoration: none;
@@ -26,13 +27,10 @@ header {
   text-align: center;
 }
 
-nav a {
-  margin-right: 1em;
-}
-
 main > div {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
 }
 
 .box {
@@ -41,6 +39,15 @@ main > div {
   flex-basis: 20em;
   border: 1px solid gray;
   border-radius: 0.3em;
+}
+
+@media only screen and (max-width: 50em) {
+  main > div {
+    flex-wrap: wrap;
+  }
+  .box {
+    flex-basis: 100%;
+  }
 }
 
 button {

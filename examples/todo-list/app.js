@@ -39,7 +39,8 @@
           window.sessionStorage.setItem("lang", store.currentLanguage);
           render();
         });
-        store.currentLanguage = Number(window.sessionStorage.getItem("lang")) || 0;
+        store.currentLanguage =
+          Number(window.sessionStorage.getItem("lang")) || 0;
       }
     },
     "[data-mojito-app]",
