@@ -1,4 +1,4 @@
-# Mojito
+# Mojito 🍸
 
 A super tiny JavaScript framework for web apps. It's just 0.5 kB minified and gzipped!
 
