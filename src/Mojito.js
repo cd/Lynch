@@ -29,6 +29,11 @@ var Mojito = (function() {
   Mojito.components = {};
 
   /**
+   * All kinds of utilities and helper functions. Accessible from every component.
+   */
+  Mojito.utils = {};
+
+  /**
    * Render all
    */
   Mojito.prototype.render = function() {
