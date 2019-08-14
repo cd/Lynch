@@ -23,7 +23,7 @@ var Mojito = (function() {
     this.attributes = {};
   };
 
-  Mojito.version = "0.3.0";
+  Mojito.version = "0.4.0";
 
   /**
    * Registered Mojito components
