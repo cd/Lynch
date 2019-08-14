@@ -23,7 +23,7 @@ var Mojito = (function() {
     this.attributes = {};
   };
 
-  Mojito.version = "0.2.0";
+  Mojito.version = "0.3.0";
 
   /**
    * Registered Mojito components
@@ -38,7 +38,9 @@ var Mojito = (function() {
   /**
    * Logging info.
    */
-  Mojito.logging = Boolean(JSON.parse(window.sessionStorage.getItem("MojitoLogging")));
+  Mojito.logging = Boolean(
+    JSON.parse(window.sessionStorage.getItem("MojitoLogging"))
+  );
 
   /**
    * Render all
@@ -49,12 +51,18 @@ var Mojito = (function() {
   };
 
   /**
-   * Render only the component itself
+   * Render only if the component itself has changed.
+   * Note: Child components will be always re-created.
    */
   Mojito.prototype.renderComponent = function() {
-    if (Mojito.logging) console.log("Render component " + this.selector);
     this.attributes = this.element.dataset;
-    this.element.innerHTML = this.template(this.data, this.attributes);
+    this.getChildComponentElements().forEach(function(child) {
+      child.innerHTML = "";
+    });
+    var generatedHTML = this.template(this.data, this.attributes);
+    if (this.element.innerHTML === generatedHTML) return;
+    if (Mojito.logging) console.log("Render component " + this.selector);
+    this.element.innerHTML = generatedHTML;
   };
 
   /**
