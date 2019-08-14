@@ -34,6 +34,7 @@
         data: {},
 
         created: function(data, attributes, render, element) {
+          // Dispatch event if user clicks on radio element
           element.addEventListener("click", function(event) {
             if (event.target.name !== "language") return;
             element.dispatchEvent(

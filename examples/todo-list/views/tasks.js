@@ -19,16 +19,20 @@
         },
 
         data: {
+          // Inital (dummy) items
           items: [
             {
+              id: 0,
               class: "todo",
               text: "Write documentation"
             },
             {
+              id: 1,
               class: "todo",
               text: "Create more examples"
             },
             {
+              id: 2,
               class: "done",
               text: "Create a super tiny framework"
             }
@@ -40,7 +44,8 @@
           element.addEventListener("add", function(event) {
             data.items.push({
               text: event.detail.itemText,
-              class: "todo"
+              class: "todo",
+              id: data.items[data.items.length - 1].id + 1
             });
             window.sessionStorage.setItem("items", JSON.stringify(data.items));
             render();
@@ -48,14 +53,20 @@
 
           // For items to be moved to "done" section by component "toto-list.js"
           element.addEventListener("done", function(event) {
-            data.items[data.items.indexOf(event.detail.item)].class = "done";
+            var item = data.items.find(function(item) {
+              return item.id === event.detail.itemId;
+            });
+            item.class = "done";
             window.sessionStorage.setItem("items", JSON.stringify(data.items));
             render();
           });
 
-          // For items to be deleted by component "todo-list.js"
+          // For items to be "deleted" by component "todo-list.js"
           element.addEventListener("remove", function(event) {
-            data.items.splice(data.items.indexOf(event.detail.item), 1);
+            var item = data.items.find(function(item) {
+              return item.id === event.detail.itemId;
+            });
+            item.class = "";
             window.sessionStorage.setItem("items", JSON.stringify(data.items));
             render();
           });

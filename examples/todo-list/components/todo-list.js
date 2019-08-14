@@ -20,14 +20,17 @@
             html +=
               "<h2>" + store.translations.done[store.currentLanguage] + "</h2>";
           html += "<ul>";
+
+          // List all items by loop
           for (var index = 0; index < data.items.length; index++) {
             html += "<li>";
             html += data.items[index].text;
-            html += "<button data-button-index='" + index + "'>";
+            html += "<button data-button-id='" + data.items[index].id + "'>";
             html += data.class === "todo" ? "✔" : "❌";
             html += "️</button>";
             html += "</li>";
           }
+
           html += "</ul>";
           return html;
         },
@@ -38,14 +41,17 @@
         },
 
         created: function(data, attributes, render, element) {
+          /**
+           * Dispatch event of user clicks on a button
+           */
           var buttonHandler = function(event) {
-            var itemIndex = event.target.dataset.buttonIndex;
-            if (!itemIndex) return;
+            var itemId = event.target.dataset.buttonId;
+            if (!itemId) return;
             element.dispatchEvent(
               new CustomEvent(data.class === "todo" ? "done" : "remove", {
                 bubbles: true,
                 detail: {
-                  item: data.items[itemIndex]
+                  itemId: Number(itemId)
                 }
               })
             );
@@ -53,7 +59,10 @@
 
           element.addEventListener("click", buttonHandler);
 
+          // Get class of component (todo list or done list)
           data.class = attributes.mojitoId;
+
+          // Get specific items from parent component
           data.items = data._parent.items.filter(function(item) {
             return item.class === attributes.mojitoId;
           });

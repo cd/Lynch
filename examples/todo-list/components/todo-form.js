@@ -22,6 +22,7 @@
         data: {},
 
         created: function(data, attributes, render, element) {
+          // Dispatch add event if user clicks on button
           var buttonHandler = function(event) {
             if (event.target.localName !== "button") return;
             var itemText = element.querySelector('input[type="text"').value;
