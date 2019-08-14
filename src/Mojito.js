@@ -58,6 +58,10 @@ var Mojito = (function() {
     this.attributes = this.element.dataset;
     this.getChildComponentElements().forEach(function(child) {
       child.innerHTML = "";
+
+      // Delete all event listeners
+      var clone = child.cloneNode(true);
+      child.parentNode.replaceChild(clone, child);
     });
     var generatedHTML = this.template(this.data, this.attributes);
     if (this.element.innerHTML === generatedHTML) return;
