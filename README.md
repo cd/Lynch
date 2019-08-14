@@ -8,9 +8,10 @@ A super tiny JavaScript framework for web apps. It's just 0.5 kB minified and gz
 
 [👉 **Check out the Live Demo!**](https://cd.github.io/mojito/examples/todo-list/)
 
-In this simple example you can see the full power of Mojito and pure JavaScript:
+In this simple example you can see the full power of Mojito and vanilla JavaScript:
 
 - Nested and reusable components
 - Isolated and shared data
+- Reuseable functions
 - Events / Reactivity
 - Routing
