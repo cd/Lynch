@@ -36,10 +36,10 @@ var Mojito = (function() {
   Mojito.utils = {};
 
   /**
-   * Logging info.
+   * Debug info.
    */
-  Mojito.logging = Boolean(
-    JSON.parse(window.sessionStorage.getItem("MojitoLogging"))
+  Mojito.debug = Boolean(
+    JSON.parse(window.sessionStorage.getItem("MojitoDebug"))
   );
 
   /**
@@ -55,6 +55,13 @@ var Mojito = (function() {
    * Note: Child components will be always re-created.
    */
   Mojito.prototype.renderComponent = function() {
+    if (Mojito.debug) {
+      var colorR = Math.round(Math.random() * 255);
+      var colorG = Math.round(Math.random() * 255);
+      var colorB = Math.round(Math.random() * 255);
+      this.element.style.border =
+        "3px solid rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
+    }
     this.attributes = this.element.dataset;
     this.getChildComponentElements().forEach(function(child) {
       child.innerHTML = "";
@@ -65,7 +72,7 @@ var Mojito = (function() {
     });
     var generatedHTML = this.template(this.data, this.attributes);
     if (this.element.innerHTML === generatedHTML) return;
-    if (Mojito.logging) console.log("Render component " + this.selector);
+    if (Mojito.debug) console.log("Render component " + this.selector);
     this.element.innerHTML = generatedHTML;
   };
 
@@ -91,7 +98,7 @@ var Mojito = (function() {
       var compontentSelector = '[data-mojito-comp="' + componentName + '"]';
       if (componentId)
         compontentSelector += '[data-mojito-id="' + componentId + '"]';
-      if (Mojito.logging)
+      if (Mojito.debug)
         console.log(
           _this.selector + " creates child component " + compontentSelector
         );
