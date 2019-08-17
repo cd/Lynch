@@ -11,22 +11,22 @@
       {
         template: function() {
           var html = "";
-          if (this.class === "todo")
+          if (this.data.class === "todo")
             html +=
               "<h2>" +
               store.translations.tasks[store.currentLanguage] +
               "</h2>";
-          if (this.class === "done")
+          if (this.data.class === "done")
             html +=
               "<h2>" + store.translations.done[store.currentLanguage] + "</h2>";
           html += "<ul>";
 
           // List all items by loop
-          for (var index = 0; index < this.items.length; index++) {
+          for (var index = 0; index < this.data.items.length; index++) {
             html += "<li>";
-            html += this.items[index].text;
-            html += "<button data-button-id='" + this.items[index].id + "'>";
-            html += this.class === "todo" ? "✔" : "❌";
+            html += this.data.items[index].text;
+            html += "<button data-button-id='" + this.data.items[index].id + "'>";
+            html += this.data.class === "todo" ? "✔" : "❌";
             html += "️</button>";
             html += "</li>";
           }

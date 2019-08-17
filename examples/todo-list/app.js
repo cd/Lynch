@@ -24,10 +24,10 @@
 
         // No further rendering if main component name
         // is not defined yet.
-        if (!this.componentName) return html;
+        if (!this.data.componentName) return html;
 
         html += "<main>";
-        html += '  <div data-mojito-comp="' + this.componentName + '"></div>';
+        html += '  <div data-mojito-comp="' + this.data.componentName + '"></div>';
         html += "</main>";
         return html;
       },

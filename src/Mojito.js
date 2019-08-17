@@ -22,7 +22,7 @@ var Mojito = (function() {
     this.store = store || {};
   };
 
-  Mojito.version = "0.6.0";
+  Mojito.version = "0.7.0";
 
   /**
    * Registered Mojito components
@@ -37,9 +37,7 @@ var Mojito = (function() {
   /**
    * Debug info.
    */
-  Mojito.debug = Boolean(
-    JSON.parse(window.sessionStorage.getItem("MojitoDebug"))
-  );
+  Mojito.debug = false;
 
   /**
    * Render all
@@ -68,7 +66,7 @@ var Mojito = (function() {
       var clone = child.cloneNode(true);
       child.parentNode.replaceChild(clone, child);
     });
-    var generatedHTML = this.template.call(this.data);
+    var generatedHTML = this.template.call({ data: this.data });
     if (this.element.innerHTML === generatedHTML) return;
     if (Mojito.debug) console.log("Render component " + this.selector);
     this.element.innerHTML = generatedHTML;
@@ -90,7 +88,7 @@ var Mojito = (function() {
    */
   Mojito.prototype.createChildComponents = function(childComponentElements) {
     // IE 11 support (no arrow functions)
-          var _this = this;
+    var _this = this;
     childComponentElements.forEach(function(element) {
       var componentName = element.dataset.mojitoComp || "";
       var componentId = element.dataset.mojitoId || null;

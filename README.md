@@ -33,7 +33,7 @@ Just add Mojito to your HTML file, define a main component and call the componen
         // Returns a HTML string which will be rendered
         // inside the selected DOM element.
         template: function() {
-          return "<strong>" + this.myText + "</strong>";
+          return "<strong>" + this.data.myText + "</strong>";
         },
 
         // Component's data
@@ -61,7 +61,7 @@ Result:
 And this is what happend: When you call the `create()` method, the following steps are taken:
 
 1. The component grabs the element with the `[data-mojito-app]` selector.
-2. The template function will be called. Within the function, the data object is accessible via `this`.
+2. The template function will be called. Within the function, the data object is accessible via `this.data`.
 3. The returned string will be parsed and included inside the element.
 
 This is a very static example, I grant, so let's add a little bit more dynamic:
@@ -70,7 +70,7 @@ This is a very static example, I grant, so let's add a little bit more dynamic:
 new Mojito(
   {
     template: function() {
-      return "<strong>" + this.myText + "</strong>";
+      return "<strong>" + this.data.myText + "</strong>";
     },
     data: {
       myText: "Hello Mojito!";
@@ -90,7 +90,7 @@ new Mojito(
 
 This example continues the above steps:
 
-4. After the component rendered with inital data, the `created` hook will be called. The data object ist accessable with `this.data` and can be manipulated. To force a re-render, use `this.render()`.
+4. After the component rendered with inital data, the `created` hook will be called. The data object is accessable with `this.data` and can be manipulated. To force a re-render, use `this.render()`.
 
 You can also create components inside other components. You just have to register it to Mojito and put it in parents html template with the special `[data-mojito-comp]` attribute:
 
@@ -147,7 +147,7 @@ Mojito.components.myChildComponent = function(selector) {
   return (
     new Mojito({
       template: function() {
-        return "I can see parents data object: " + JSON.stringify(this._data);
+        return "I can see parents data object: " + JSON.stringify(this.data._data);
       },
 
       created: function() {
