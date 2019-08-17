@@ -8,11 +8,11 @@
 
   return new Mojito(
     {
-      template: function(data, attributes) {},
+      template: function() {},
 
       data: {},
 
-      created: function(data, attributes, render, element) {}
+      created: function() {}
     },
     "[data-mojito-app]",
     store

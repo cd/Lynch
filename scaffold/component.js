@@ -7,11 +7,11 @@
   Mojito.components.myComp = function(selector, store) {
     return new Mojito(
       {
-        template: function(data, attributes) {},
+        template: function() {},
 
         data: {},
 
-        created: function(data, attributes, render, element) {}
+        created: function() {}
       },
       selector,
       store

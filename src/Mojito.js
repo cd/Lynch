@@ -20,10 +20,9 @@ var Mojito = (function() {
     this.template = options.template || null;
     this.created = options.created;
     this.store = store || {};
-    this.attributes = {};
   };
 
-  Mojito.version = "0.5.0";
+  Mojito.version = "0.6.0";
 
   /**
    * Registered Mojito components
@@ -62,7 +61,6 @@ var Mojito = (function() {
       this.element.style.border =
         "3px solid rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
     }
-    this.attributes = this.element.dataset;
     this.getChildComponentElements().forEach(function(child) {
       child.innerHTML = "";
 
@@ -70,7 +68,7 @@ var Mojito = (function() {
       var clone = child.cloneNode(true);
       child.parentNode.replaceChild(clone, child);
     });
-    var generatedHTML = this.template(this.data, this.attributes);
+    var generatedHTML = this.template.call(this.data);
     if (this.element.innerHTML === generatedHTML) return;
     if (Mojito.debug) console.log("Render component " + this.selector);
     this.element.innerHTML = generatedHTML;
@@ -91,7 +89,8 @@ var Mojito = (function() {
    * Create child components.
    */
   Mojito.prototype.createChildComponents = function(childComponentElements) {
-    var _this = this;
+    // IE 11 support (no arrow functions)
+          var _this = this;
     childComponentElements.forEach(function(element) {
       var componentName = element.dataset.mojitoComp || "";
       var componentId = element.dataset.mojitoId || null;
@@ -115,23 +114,22 @@ var Mojito = (function() {
    * Create component flow
    */
   Mojito.prototype.create = function(parentData) {
-    // 1. Add parents data to own data
-    this.data._parent = parentData;
-
-    // 2. Grab element from DOM
+    // 1. Grab element from DOM
     this.element = document.querySelector(this.selector);
+
+    // 2. Add parents data and DOM element to own data
+    this.data._data = parentData;
+    this.data._el = this.element;
 
     // 3. Render the component and save the next child components
     this.renderComponent();
     var childComponentElements = this.getChildComponentElements();
 
     // 4. Call created function of the component
-    this.created(
-      this.data,
-      this.attributes,
-      this.render.bind(this),
-      document.querySelector(this.selector)
-    );
+    this.created.call({
+      data: this.data,
+      render: this.render.bind(this) // todo: remove bind?
+    });
 
     // 5. Create child components
     this.createChildComponents(childComponentElements);

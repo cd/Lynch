@@ -19,15 +19,15 @@
 
   return new Mojito(
     {
-      template: function(data, attributes) {
+      template: function() {
         var html = '<div data-mojito-comp="header"></div>';
 
         // No further rendering if main component name
         // is not defined yet.
-        if (!data.componentName) return html;
+        if (!this.componentName) return html;
 
         html += "<main>";
-        html += '  <div data-mojito-comp="' + data.componentName + '"></div>';
+        html += '  <div data-mojito-comp="' + this.componentName + '"></div>';
         html += "</main>";
         return html;
       },
@@ -36,12 +36,15 @@
         componentName: null
       },
 
-      created: function(data, attributes, render, element) {
+      created: function() {
+        // IE 11 support (no arrow functions)
+          var _this = this;
+
         // Register event listener
-        element.addEventListener("changeLanguage", function(event) {
+        this.data._el.addEventListener("changeLanguage", function(event) {
           store.currentLanguage = event.detail.language;
           window.sessionStorage.setItem("lang", store.currentLanguage);
-          render();
+          _this.render();
         });
 
         // Set inital language
@@ -49,8 +52,8 @@
           Number(window.sessionStorage.getItem("lang")) || 0;
 
         // Set main component by routing function. Finally, re-render app.
-        data.componentName = Mojito.utils.helper.getComponentNameByURL();
-        render();
+        _this.data.componentName = Mojito.utils.helper.getComponentNameByURL();
+        _this.render();
       }
     },
     "[data-mojito-app]",

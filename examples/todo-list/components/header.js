@@ -9,7 +9,7 @@
   Mojito.components.header = function(selector, store) {
     return new Mojito(
       {
-        template: function(data, attributes) {
+        template: function() {
           var html = "<header>";
           html += "<h1>" + store.title + "</h1>";
           html += "<nav>";
@@ -26,7 +26,7 @@
 
         data: {},
 
-        created: function(data, attributes, render, element) {}
+        created: function() {}
       },
       selector,
       store

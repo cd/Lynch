@@ -9,7 +9,7 @@
   Mojito.components.viewSettings = function(selector, store) {
     return new Mojito(
       {
-        template: function(data, attributes) {
+        template: function() {
           var html = '<div class="box"><h2>';
           html +=
             store.translations.selectLanguage[store.currentLanguage] +
@@ -33,11 +33,14 @@
 
         data: {},
 
-        created: function(data, attributes, render, element) {
+        created: function() {
+          // IE 11 support (no arrow functions)
+          var _this = this;
+
           // Dispatch event if user clicks on radio element
-          element.addEventListener("click", function(event) {
+          this.data._el.addEventListener("click", function(event) {
             if (event.target.name !== "language") return;
-            element.dispatchEvent(
+            _this.data._el.dispatchEvent(
               new CustomEvent("changeLanguage", {
                 bubbles: true,
                 detail: {

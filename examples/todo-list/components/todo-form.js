@@ -9,7 +9,7 @@
   Mojito.components.todoForm = function(selector, store) {
     return new Mojito(
       {
-        template: function(data, attributes) {
+        template: function() {
           var html =
             "<h2>" +
             store.translations.add[store.currentLanguage] +
@@ -21,13 +21,16 @@
 
         data: {},
 
-        created: function(data, attributes, render, element) {
+        created: function() {
+          // IE 11 support (no arrow functions)
+          var _this = this;
+
           // Dispatch add event if user clicks on button
           var buttonHandler = function(event) {
             if (event.target.localName !== "button") return;
-            var itemText = element.querySelector('input[type="text"').value;
+            var itemText = _this.data._el.querySelector('input[type="text"').value;
             if (!itemText.trim()) return;
-            element.dispatchEvent(
+            _this.data._el.dispatchEvent(
               new CustomEvent("add", {
                 bubbles: true,
                 detail: {
@@ -37,7 +40,7 @@
             );
           };
 
-          element.addEventListener("click", buttonHandler);
+          this.data._el.addEventListener("click", buttonHandler);
         }
       },
       selector,

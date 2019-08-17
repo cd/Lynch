@@ -9,7 +9,7 @@
   Mojito.components.viewTasks = function(selector, store) {
     return new Mojito(
       {
-        template: function(data, attributes) {
+        template: function() {
           var html = '<div class="box" data-mojito-comp="todoForm"></div>';
           html +=
             '<div class="box" data-mojito-comp="todoList" data-mojito-id="todo"></div>';
@@ -39,41 +39,44 @@
           ]
         },
 
-        created: function(data, attributes, render, element) {
+        created: function() {
+          // IE 11 support (no arrow functions)
+          var _this = this;
+
           // For new items by component 'todo-list.js'
-          element.addEventListener("add", function(event) {
-            data.items.push({
+          this.data._el.addEventListener("add", function(event) {
+            _this.data.items.push({
               text: event.detail.itemText,
               class: "todo",
-              id: data.items[data.items.length - 1].id + 1
+              id: _this.data.items[_this.data.items.length - 1].id + 1
             });
-            window.sessionStorage.setItem("items", JSON.stringify(data.items));
-            render();
+            window.sessionStorage.setItem("items", JSON.stringify(_this.data.items));
+            _this.render();
           });
 
           // For items to be moved to "done" section by component "toto-list.js"
-          element.addEventListener("done", function(event) {
-            var item = data.items.find(function(item) {
+          this.data._el.addEventListener("done", function(event) {
+            var item = _this.data.items.find(function(item) {
               return item.id === event.detail.itemId;
             });
             item.class = "done";
-            window.sessionStorage.setItem("items", JSON.stringify(data.items));
-            render();
+            window.sessionStorage.setItem("items", JSON.stringify(_this.data.items));
+            _this.render();
           });
 
           // For items to be "deleted" by component "todo-list.js"
-          element.addEventListener("remove", function(event) {
-            var item = data.items.find(function(item) {
+          this.data._el.addEventListener("remove", function(event) {
+            var item = _this.data.items.find(function(item) {
               return item.id === event.detail.itemId;
             });
             item.class = "";
-            window.sessionStorage.setItem("items", JSON.stringify(data.items));
-            render();
+            window.sessionStorage.setItem("items", JSON.stringify(_this.data.items));
+            _this.render();
           });
 
           // Load items from session storage
           var storage = window.sessionStorage.getItem("items");
-          if (storage) data.items = JSON.parse(storage);
+          if (storage) this.data.items = JSON.parse(storage);
         }
       },
       selector,
