@@ -52,15 +52,11 @@ var Mojito = (function() {
    * Note: Child components will be always re-created.
    */
   Mojito.prototype.renderComponent = function() {
-    if (Mojito.debug) {
-      var colorR = Math.round(Math.random() * 255);
-      var colorG = Math.round(Math.random() * 255);
-      var colorB = Math.round(Math.random() * 255);
-      this.element.style.border =
-        "3px solid rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
-    }
     this.getChildComponentElements().forEach(function(child) {
       child.innerHTML = "";
+
+      // Remove border style that was later added by debug mode.
+      if (Mojito.debug) child.removeAttribute("style");
 
       // Delete all event listeners
       var clone = child.cloneNode(true);
@@ -68,7 +64,14 @@ var Mojito = (function() {
     });
     var generatedHTML = this.template.call({ data: this.data });
     if (this.element.innerHTML === generatedHTML) return;
-    if (Mojito.debug) console.log("Render component " + this.selector);
+    if (Mojito.debug) {
+      console.log("Render component " + this.selector);
+      var colorR = Math.round(Math.random() * 255);
+      var colorG = Math.round(Math.random() * 255);
+      var colorB = Math.round(Math.random() * 255);
+      this.element.style.border =
+        "3px solid rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
+    }
     this.element.innerHTML = generatedHTML;
   };
 
