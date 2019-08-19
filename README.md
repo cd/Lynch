@@ -58,7 +58,7 @@ Result:
 </body>
 ```
 
-And this is what happend: When you call the `create()` method, the following steps are taken:
+And this is what happens: When you call the `create()` method, the following steps are taken:
 
 1. The component grabs the element with the `[data-mojito-app]` selector.
 2. The template function will be called. Within the function, the data object is accessible via `this.data`.
@@ -90,7 +90,7 @@ new Mojito(
 
 This example continues the above steps:
 
-4. After the component rendered with inital data, the `created` hook will be called. The data object is accessable with `this.data` and can be manipulated. To force a re-render, use `this.render()`.
+4. After the component rendered with initial data, the `created` hook will be called. The data object is accessible with `this.data` and can be manipulated. To force a re-render, use `this.render()`.
 
 You can also create components inside other components. You just have to register it to Mojito and put it in parents html template with the special `[data-mojito-comp]` attribute:
 
@@ -172,7 +172,7 @@ Mojito is very simple and lightweight. That means, that there is no room for com
 
 3. Render the component:
 
-   1. First remove all child component elements from DOM.
+   1. First, remove all child component elements from DOM.
    2. Call the components template function.
    3. The returned html will be compared with the actual DOM. If there are changes, replace the real DOM with the new one.
 
@@ -188,16 +188,16 @@ You can call `this.render()` inside the created hook to force a re-render. If yo
 
 To avoid unwanted side effects or performance issues, it's very important to know, how the creation of a component and a re-render inside the `created` hook work. Here are some hints:
 
-- Ensure, that the component can render with the inital data.
-- If child components need parents data to work, render the child components when the data is avaiable (javascript if condition)
-- If a component has a lot of child components, try to minimize the use of `this.render()`. Explanation: Eevery time, a component re-renders, all child components will be destroyed and recreated (and their child components too, etc.).
-- Make use of the Mojito debug mode. It adds a radom colored border to each component element. You can **see** the structure of the app and you can also see **when** a component is rendered. In addition, more information will be output via `console.log`. You can activate the debug mode like this:
+- Ensure, that the component can render with the initial data.
+- If child components need parents data to work, render the child components when the data is available (javascript if condition)
+- If a component has a lot of child components, try to minimize the use of `this.render()`. Explanation: Every time, a component re-renders, all child components will be destroyed and recreated (and their child components too, etc.).
+- Make use of the Mojito debug mode. It adds a random colored border to each component element. You can **see** the structure of the app and you can also see **when** a component is rendered. In addition, more information will be output via `console.log`. You can activate the debug mode like this:
   ```javascript
   Mojito.debug = true;
   ```
-  It's recommended to set the flag before the root component is rendered.
+  It's recommended to set the flag before the root component is rendered. If you use this feature, make sure, that the component element has no inline styles.
 - You shouldn't manipulate parents object. Use e.g. Custom Events to send data to the parent.
-- If you want to send specific informationen to a child component, use the data attribute of the DOM element:
+- If you want to send specific information to a child component, use the data attribute of the DOM element:
   ```javascript
   return new Mojito({
     template: function() {
