@@ -12,7 +12,9 @@
 
       data: {},
 
-      created: function() {}
+      created: function() {},
+
+      beforeDestroy: function() {}
     },
     "[data-mojito-app]",
     store

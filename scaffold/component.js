@@ -11,7 +11,9 @@
 
         data: {},
 
-        created: function() {}
+        created: function() {},
+
+        beforeDestroy: function() {}
       },
       selector,
       store
