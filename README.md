@@ -16,11 +16,11 @@ In this simple example you can see the full power of Mojito and vanilla JavaScri
 
 ## Getting Started
 
-Just add Mojito to your HTML file, define a main component and call the components `create()` method:
+Just add Mojito to your HTML file, define the main component and call the `create()` method of the component definition object:
 
 ```html
 <body>
-  <!-- Render the component inside the element -->
+  <!-- Render the component inside this element -->
   <div data-mojoto-app></div>
 
   <!-- Add Mojito -->
@@ -30,7 +30,7 @@ Just add Mojito to your HTML file, define a main component and call the componen
     // Define main component
     var myApp = new Mojito(
       {
-        // Returns a HTML string which will be rendered
+        // Returns an HTML string which will be rendered
         // inside the selected DOM element.
         template: function() {
           return "<strong>" + this.data.myText + "</strong>";
@@ -39,12 +39,21 @@ Just add Mojito to your HTML file, define a main component and call the componen
         // Component's data
         data: {
           myText: "Hello Mojito!";
+        },
+
+        // Created hook. This is where most things happen.
+        created: function() {
+          // Edit the data object
+          this.data.myText += " Love it ❤️";
+
+          // Render the component
+          this.render()
         }
       },
       "[data-mojito-app]", // DOM element selector
     );
 
-    // Create the component and render it
+    // Create the component
     myApp.create();
   </script>
 </body>
@@ -54,53 +63,28 @@ Result:
 
 ```html
 <body>
-  <div data-mojoto-app><strong>Hello Mojito!</strong></div>
+  <div data-mojoto-app>
+    <strong>Hello Mojito! Love it ❤️</strong>
+  </div>
 </body>
 ```
 
-And this is what happens: When you call the `create()` method, the following steps are taken:
+And this is what happens: When you call the `create()` method of the component definition object, the component will be created and the `created` hook will be called. The `created` hook contains the most logic of your app (add or listen to events, set timers, do XHR requests and so on). In this example, it modifies the data object and renders the component.
 
-1. The component grabs the element with the `[data-mojito-app]` selector.
-2. The template function will be called. Within the function, the data object is accessible via `this.data`.
-3. The returned string will be parsed and included inside the element.
+To render a component means, the template function will be called. The function returns an HTML string based on the data object. The returned string will be parsed and included inside the DOM element of the component.
 
-This is a very static example, I grant, so let's add a little bit more dynamic:
+You can also create components inside other components. You just have to register the component definition object to Mojito and put it in parents HTML template with the special `[data-mojito-comp]` attribute:
 
 ```javascript
-new Mojito(
-  {
-    template: function() {
-      return "<strong>" + this.data.myText + "</strong>";
-    },
-    data: {
-      myText: "Hello Mojito!";
-    },
-
-    created: function() {
-      // Add additional text after 1 seconds und render it again (implemented as arrow function, no IE support in this example)
-      window.setTimeout(() => {
-        this.data.myText += " Love it ❤️";
-        this.render();
-      }, 1000);
-    }
-  },
-  "[data-mojito-app]", // DOM element selector
-).create();
-```
-
-This example continues the above steps:
-
-4. After the component rendered with initial data, the `created` hook will be called. The data object is accessible with `this.data` and can be manipulated. To force a re-render, use `this.render()`.
-
-You can also create components inside other components. You just have to register it to Mojito and put it in parents html template with the special `[data-mojito-comp]` attribute:
-
-```javascript
-// Child components have to wrapped in a function like this
+// Child component definitions have to wrapped in a function like this
 Mojito.components.myChildComponent = function(selector) {
   return (
     new Mojito({
       template: function() {
         return "Hello from child component!";
+      },
+      created: function() {
+        this.render();
       }
     }),
     selector
@@ -115,11 +99,16 @@ return new Mojito(
         "<h1>Component inside a component</h1>" +
         '<div data-mojito-comp="myChildComponent"></div>';
       return html;
+    },
+    created: function() {
+      this.render();
     }
   },
   "[data-mojito-app]"
 ).create();
 ```
+
+And that's going on: The `create` method of the main component definition is called immediately. The main component is also created immediately. The created hook of the main component is called and renders the component to the DOM. After the component is rendered, there is an empty DOM element inside: `<div data-mojito-comp="myChildComponent"></div>`. Mojito detects this element because of the special `data` attribute. It is looking for a component definition object with a name like the value of the attribute. Then the `create()` method will be called and the child component can render itself.
 
 If you want to add the same component multiple times, you need to make them unique with the `data-mojito-id`:
 
@@ -140,55 +129,42 @@ return new Mojito(
 ).create();
 ```
 
-Inside childs component you can access parents data object as a property of your data object. Example:
+Inside a child's component, you can access the parent's data object as a property of the own data object with `this.data._data`. Attention: This is a reference to the parent data object. Any changes here affect the parent's data object (this is bad practice).
 
-```javascript
-Mojito.components.myChildComponent = function(selector) {
-  return (
-    new Mojito({
-      template: function() {
-        return "I can see parents data object: " + JSON.stringify(this.data._data);
-      },
+## Lifecycle of a component
 
-      created: function() {
-        // Access parent data in 'created' hook like this:
-        console.log(this.data._data);
-      }
-    }),
-    selector
-  );
-};
-```
+1. The lifecycle starts with the `create()` call of the component definition object.
 
-## Insights under the hood
-### Creating a component
+2. Mojito grabs the element from DOM with the specified selector.
 
-1. Grab the element from DOM.
+3. Add parent's data and the DOM element to components data (accessible via `this.data._data` and `this.data._el`).
 
-2. Add parents data and the DOM element to components data.
+4. Call the `created` hook of the component.
 
-3. Render the component:
+5. The `destroy()` method destroys the component. This happens in most cases under the hood when the parent component does a `this.render()`. First, the `beforeDestroy` hook will be called. Then, the component element will be removed from the DOM.
 
-   1. First, remove all child component elements from DOM.
-   2. Call the components template function.
-   3. The returned html will be compared with the actual DOM. If there are changes, replace the real DOM with the new one.
+## Best Practice and Tips
 
-4. Call components `created` hook (at this time the whole steps are processed again recursively).
+To avoid unwanted side effects or performance issues, it's very important to know, how Mojito works. Here are some hints:
 
-5. Call the create function of all child components. At this time the whole steps are processed again recursively.
-
-### Calling `render()` inside `created` hook
-
-You can call `this.render()` inside the created hook to force a re-render. If you do so, the above steps 3 and 5 are processed.
-
-### Best Practice and Tips
-
-To avoid unwanted side effects or performance issues, it's very important to know, how the creation of a component and a re-render inside the `created` hook work. Here are some hints:
-
-- Ensure, that the component can render with the initial data.
-- If child components need parents data to work, render the child components when the data is available.
-- If a component has a lot of child components, try to minimize the use of `this.render()`. Explanation: Every time, a component re-renders, all child components will be destroyed and recreated (and their child components too, etc.).
-- Make use of the Mojito debug mode. It adds a random colored border to each component element. You can **see** the structure of the app and you can also see **when** a component is rendered. In addition, more information will be output via `console.log`. You can activate the debug mode like this:
+- Ensure, that the component calls `this.render()`. Otherwise, nothing happens.
+- If a child component needs parent's data to work, render the child component when the data is available.
+- If a component has a lot of child components, try to minimize the use of `this.render()`. Every time, a component renders, all child components will be destroyed and recreated (and their child components too, etc.).
+- If a part of your app needs a render many times, wrap it inside an extra component to avoid a re-render of static content and unnecessary re-creations of child components.
+- Clear timers in the `beforeDestroy` hook:
+  ```javascript
+  // ...
+  created: function() {
+    // ...
+    this.data.myTimerId = window.setInterval(myFnc, 1000);
+    // ...
+  },
+  beforeDestroy: function() {
+    window.clearInterval(this.data.myTimerId);
+  }
+  // ...
+  ```
+- Make use of the Mojito debug mode. It adds a random colored border to each component element. You can see the structure of the app and you can also see when a component is rendered. Further information is also output via `console.log`. You can activate the debug mode like this:
   ```javascript
   Mojito.debug = true;
   ```
@@ -198,7 +174,7 @@ To avoid unwanted side effects or performance issues, it's very important to kno
   ```javascript
   return new Mojito({
     template: function() {
-      return '<div data-mojito-comp="myChildComponent" data-class="special"></div>';
+      return '<div data-mojito-comp="myChildComponent" data-my-info-message="super component 123"></div>';
     }
   });
   ```

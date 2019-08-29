@@ -41,6 +41,8 @@
           };
 
           this.data._el.addEventListener("click", buttonHandler);
+
+          this.render();
         }
       },
       selector,

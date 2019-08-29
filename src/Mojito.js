@@ -18,11 +18,14 @@ var Mojito = (function() {
     this.element = null;
     this.data = options.data || {};
     this.template = options.template || null;
-    this.created = options.created;
+    this.created = options.created || null;
+    this.beforeDestroy = options.beforeDestroy || null;
     this.store = store || {};
+    this.childComponents = [];
+    this.parentComponent = null;
   };
 
-  Mojito.version = "0.8.0";
+  Mojito.version = "0.9.0";
 
   /**
    * Registered Mojito components
@@ -35,7 +38,7 @@ var Mojito = (function() {
   Mojito.utils = {};
 
   /**
-   * Debug info.
+   * Debug info
    */
   Mojito.debug = false;
 
@@ -43,8 +46,54 @@ var Mojito = (function() {
    * Render all
    */
   Mojito.prototype.render = function() {
+    // If there is no parent node anymore, the element is not part
+    // of the DOM anymore. There is no usage for the component.
+    // This happens, for example, if the "render" method was called
+    // asynchronously and a re-render already happened in higher-level components.
+    if (!this.element.parentNode) return;
+
+    this.destroyChildComponents(true);
     this.renderComponent();
-    this.createChildComponents(this.getChildComponentElements());
+    this.createChildComponents();
+  };
+
+  /**
+   * Destroy all child components
+   */
+  Mojito.prototype.destroyChildComponents = function(rootCalled) {
+    this.childComponents.forEach(function(element) {
+      element.destroyChildComponents(false);
+      element.destroy(rootCalled);
+    });
+    this.childComponents = [];
+  };
+
+  /**
+   * Destroy component
+   */
+  Mojito.prototype.destroy = function(rootCalled) {
+    // Call 'beforeDestroy' hook (e.g. to clear timer)
+    if (this.beforeDestroy) {
+      this.beforeDestroy.call({
+        data: this.data
+      });
+    }
+
+    // The element does not need to be removed from the DOM
+    // if the parent item is also removed soon.
+    if (!rootCalled) return;
+
+    // Remove all elements
+    this.element.innerHTML = "";
+
+    // Remove border style that was later added by debug mode.
+    if (Mojito.debug) this.element.removeAttribute("style");
+
+    // Delete all event listeners (clone and replace element)
+    var clone = this.element.cloneNode(true);
+    this.element.parentNode.replaceChild(clone, this.element);
+
+    if (Mojito.debug) console.log("Component destroyed: " + this.selector);
   };
 
   /**
@@ -52,18 +101,13 @@ var Mojito = (function() {
    * Note: Child components will be always re-created.
    */
   Mojito.prototype.renderComponent = function() {
-    this.getChildComponentElements().forEach(function(child) {
-      child.innerHTML = "";
-
-      // Remove border style that was later added by debug mode.
-      if (Mojito.debug) child.removeAttribute("style");
-
-      // Delete all event listeners
-      var clone = child.cloneNode(true);
-      child.parentNode.replaceChild(clone, child);
-    });
+    // Generate new HTML
     var generatedHTML = this.template.call({ data: this.data });
+
+    // If the generated HTML is equal to the current rendered HTML, do nothing.
     if (this.element.innerHTML === generatedHTML) return;
+
+    // If debug mode is enabled, add a random colored border to the component.
     if (Mojito.debug) {
       console.log("Render component " + this.selector);
       var colorR = Math.round(Math.random() * 255);
@@ -72,26 +116,21 @@ var Mojito = (function() {
       this.element.style.border =
         "3px solid rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
     }
-    this.element.innerHTML = generatedHTML;
-  };
 
-  /**
-   * Get all child components
-   */
-  Mojito.prototype.getChildComponentElements = function() {
-    var childComponentElements = this.element.querySelectorAll(
-      "[data-mojito-comp]"
-    );
-    childComponentElements = Array.prototype.slice.call(childComponentElements); // IE workaround
-    return childComponentElements;
+    // Replace the current HTML
+    this.element.innerHTML = generatedHTML;
   };
 
   /**
    * Create child components.
    */
-  Mojito.prototype.createChildComponents = function(childComponentElements) {
-    // IE 11 support (no arrow functions)
+  Mojito.prototype.createChildComponents = function() {
+    var childComponentElements = this.element.querySelectorAll(
+      "[data-mojito-comp]"
+    );
+    childComponentElements = Array.prototype.slice.call(childComponentElements); // IE workaround
     var _this = this;
+    this.childComponents = [];
     childComponentElements.forEach(function(element) {
       var componentName = element.dataset.mojitoComp || "";
       var componentId = element.dataset.mojitoId || null;
@@ -107,33 +146,38 @@ var Mojito = (function() {
       var component = Mojito.components[componentName];
       if (typeof component !== "function")
         throw new Error("Mojito Component '" + componentName + "' not found");
-      component(compontentSelector, _this.store).create(_this.data);
+      _this.childComponents.push(
+        component(compontentSelector, _this.store).create(_this)
+      );
     });
   };
 
   /**
    * Create component flow
    */
-  Mojito.prototype.create = function(parentData) {
-    // 1. Grab element from DOM
-    this.element = document.querySelector(this.selector);
+  Mojito.prototype.create = function(parentComponent) {
+    this.parentComponent = parentComponent || null;
+
+    // 1. Grab element from DOM (starting from the parent component or 'document')
+    var parentElement;
+    if (parentComponent) {
+      parentElement = parentComponent.element;
+    } else {
+      parentElement = document;
+    }
+    this.element = parentElement.querySelector(this.selector);
 
     // 2. Add parents data and DOM element to own data
-    this.data._data = parentData;
+    this.data._data = parentComponent ? parentComponent.data : null;
     this.data._el = this.element;
-
-    // 3. Render the component and save the next child components
-    this.renderComponent();
-    var childComponentElements = this.getChildComponentElements();
 
     // 4. Call created function of the component
     this.created.call({
       data: this.data,
-      render: this.render.bind(this) // todo: remove bind?
+      render: this.render.bind(this)
     });
 
-    // 5. Create child components
-    this.createChildComponents(childComponentElements);
+    return this;
   };
 
   return Mojito;

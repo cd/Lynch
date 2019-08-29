@@ -51,9 +51,9 @@
         store.currentLanguage =
           Number(window.sessionStorage.getItem("lang")) || 0;
 
-        // Set main component by routing function. Finally, re-render app.
-        _this.data.componentName = Mojito.utils.helper.getComponentNameByURL();
-        _this.render();
+        // Set main component by routing function. Finally, render all.
+        this.data.componentName = Mojito.utils.helper.getComponentNameByURL();
+        this.render();
       }
     },
     "[data-mojito-app]",

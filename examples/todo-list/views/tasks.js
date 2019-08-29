@@ -77,6 +77,8 @@
           // Load items from session storage
           var storage = window.sessionStorage.getItem("items");
           if (storage) this.data.items = JSON.parse(storage);
+
+          this.render();
         }
       },
       selector,

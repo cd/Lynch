@@ -26,7 +26,9 @@
 
         data: {},
 
-        created: function() {}
+        created: function() {
+          this.render();
+        }
       },
       selector,
       store
