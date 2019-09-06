@@ -79,15 +79,17 @@ You can also create components inside other components. You just have to registe
 // Child component definitions have to wrapped in a function like this
 Mojito.components.myChildComponent = function(selector) {
   return (
-    new Mojito({
-      template: function() {
-        return "Hello from child component!";
+    new Mojito(
+      {
+        template: function() {
+          return "Hello from child component!";
+        },
+        created: function() {
+          this.render();
+        }
       },
-      created: function() {
-        this.render();
-      }
-    }),
-    selector
+      selector
+	  )
   );
 };
 
