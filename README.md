@@ -21,7 +21,7 @@ Just add Mojito to your HTML file, define the main component and call the `creat
 ```html
 <body>
   <!-- Render the component inside this element -->
-  <div data-mojoto-app></div>
+  <div data-mojito-app></div>
 
   <!-- Add Mojito -->
   <script src="https://cdn.jsdelivr.net/gh/cd/mojito/src/Mojito.js"></script>
@@ -38,7 +38,7 @@ Just add Mojito to your HTML file, define the main component and call the `creat
 
         // Component's data
         data: {
-          myText: "Hello Mojito!";
+          myText: "Hello Mojito!"
         },
 
         // Created hook. This is where most things happen.
