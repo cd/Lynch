@@ -25,7 +25,7 @@ var Mojito = (function() {
     this.parentComponent = null;
   };
 
-  Mojito.version = "0.9.0";
+  Mojito.version = "0.10.0";
 
   /**
    * Registered Mojito components
@@ -46,10 +46,7 @@ var Mojito = (function() {
    * Render all
    */
   Mojito.prototype.render = function() {
-    // If there is no parent node anymore, the element is not part
-    // of the DOM anymore. There is no usage for the component.
-    // This happens, for example, if the "render" method was called
-    // asynchronously and a re-render already happened in higher-level components.
+    // Do nothing if the element is no longer part of the DOM
     if (!this.element.parentNode) return;
 
     this.destroyChildComponents(true);
@@ -82,6 +79,9 @@ var Mojito = (function() {
     // The element does not need to be removed from the DOM
     // if the parent item is also removed soon.
     if (!rootCalled) return;
+
+    // Do nothing if the element is no longer part of the DOM
+    if (!this.element.parentNode) return;
 
     // Remove all elements
     this.element.innerHTML = "";
