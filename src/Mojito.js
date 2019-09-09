@@ -22,10 +22,9 @@ var Mojito = (function() {
     this.beforeDestroy = options.beforeDestroy || null;
     this.store = store || {};
     this.childComponents = [];
-    this.parentComponent = null;
   };
 
-  Mojito.version = "0.10.0";
+  Mojito.version = "0.11.0";
 
   /**
    * Registered Mojito components
@@ -156,22 +155,16 @@ var Mojito = (function() {
    * Create component flow
    */
   Mojito.prototype.create = function(parentComponent) {
-    this.parentComponent = parentComponent || null;
+    parentComponent = parentComponent || { element: document, data: null };
 
-    // 1. Grab element from DOM (starting from the parent component or 'document')
-    var parentElement;
-    if (parentComponent) {
-      parentElement = parentComponent.element;
-    } else {
-      parentElement = document;
-    }
-    this.element = parentElement.querySelector(this.selector);
+    // 1. Grab element from DOM
+    this.element = parentComponent.element.querySelector(this.selector);
 
     // 2. Add parents data and DOM element to own data
-    this.data._data = parentComponent ? parentComponent.data : null;
+    this.data._data = parentComponent.data;
     this.data._el = this.element;
 
-    // 4. Call created function of the component
+    // 3. Call created function of the component
     this.created.call({
       data: this.data,
       render: this.render.bind(this)
