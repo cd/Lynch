@@ -24,7 +24,7 @@ var Mojito = (function() {
     this.childComponents = [];
   };
 
-  Mojito.version = "0.11.0";
+  Mojito.version = "0.12.0";
 
   /**
    * Registered Mojito components
@@ -42,9 +42,16 @@ var Mojito = (function() {
   Mojito.debug = false;
 
   /**
+   * Disable the render function (for debugging purposes)
+   */
+  Mojito.disableRender = false;
+
+  /**
    * Render all
    */
   Mojito.prototype.render = function() {
+    if(Mojito.disableRender) return;
+
     // Do nothing if the element is no longer part of the DOM
     if (!this.element.parentNode) return;
 
