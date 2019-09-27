@@ -182,3 +182,4 @@ To avoid unwanted side effects or performance issues, it's very important to kno
   ```
 - Use the [scaffords](https://github.com/cd/mojito/tree/master/scaffold).
 - Study the [examples](https://github.com/cd/mojito/tree/master/examples).
+- If you want to inspect the DOM, it may be helpful to globally disable the render function. All you have to do is type `Mojito.disableRender = true` into the console or place it in your code.
