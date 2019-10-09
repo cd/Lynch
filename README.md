@@ -139,7 +139,7 @@ Inside a child's component, you can access the parent's data object as a propert
 
 2. Mojito grabs the element from DOM with the specified selector.
 
-3. Add parent's data and the DOM element to components data (accessible via `this.data._data` and `this.data._el`).
+3. Add parent's data, the DOM element and the selector name to components data (accessible via `this.data._data`, `this.data._el` and `this.data._selector`).
 
 4. Call the `created` hook of the component.
 
