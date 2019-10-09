@@ -24,7 +24,7 @@ var Mojito = (function() {
     this.childComponents = [];
   };
 
-  Mojito.version = "0.12.0";
+  Mojito.version = "0.13.0";
 
   /**
    * Registered Mojito components
@@ -167,9 +167,10 @@ var Mojito = (function() {
     // 1. Grab element from DOM
     this.element = parentComponent.element.querySelector(this.selector);
 
-    // 2. Add parents data and DOM element to own data
+    // 2. Add parents data, DOM element and selector name to own data
     this.data._data = parentComponent.data;
     this.data._el = this.element;
+    this.data._selector = this.selector;
 
     // 3. Call created function of the component
     this.created.call({
