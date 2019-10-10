@@ -143,6 +143,13 @@ var Mojito = (function() {
       var compontentSelector = '[data-mojito-comp="' + componentName + '"]';
       if (componentId)
         compontentSelector += '[data-mojito-id="' + componentId + '"]';
+
+      // Prevent duplicate components (due to recursive render and build calls)
+      var duplicates = _this.childComponents.filter(function(childComponent) {
+        return childComponent.selector === compontentSelector;
+      }).length;
+      if (duplicates) return;
+
       if (Mojito.debug)
         console.log(
           _this.selector + " creates child component " + compontentSelector
