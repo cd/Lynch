@@ -24,7 +24,7 @@ var Mojito = (function() {
     this.childComponents = [];
   };
 
-  Mojito.version = "0.13.0";
+  Mojito.version = "0.13.1";
 
   /**
    * Registered Mojito components
