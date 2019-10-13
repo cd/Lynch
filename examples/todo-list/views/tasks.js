@@ -12,9 +12,9 @@
         template: function() {
           var html = '<div class="box" data-mojito-comp="todoForm"></div>';
           html +=
-            '<div class="box" data-mojito-comp="todoList" data-mojito-id="todo"></div>';
+            '<div class="box" data-mojito-comp="todoList" data-mojito-id="1"></div>';
           html +=
-            '<div class="box" data-mojito-comp="todoList" data-mojito-id="done"></div>';
+            '<div class="box" data-mojito-comp="todoList" data-mojito-id="2"></div>';
           return html;
         },
 
@@ -43,6 +43,34 @@
           // IE 11 support (no arrow functions)
           var _this = this;
 
+          /**
+           * Create property object
+           */
+          var createProperties = function() {
+            return [
+              {
+                component: "todoList",
+                id: "1",
+                prop: {
+                  class: "todo",
+                  items: _this.data.items.filter(function(item) {
+                    return item.class === "todo";
+                  })
+                }
+              },
+              {
+                component: "todoList",
+                id: "2",
+                prop: {
+                  class: "done",
+                  items: _this.data.items.filter(function(item) {
+                    return item.class === "done";
+                  })
+                }
+              }
+            ];
+          };
+
           // For new items by component 'todo-list.js'
           this.data._el.addEventListener("add", function(event) {
             _this.data.items.push({
@@ -50,8 +78,13 @@
               class: "todo",
               id: _this.data.items[_this.data.items.length - 1].id + 1
             });
-            window.sessionStorage.setItem("items", JSON.stringify(_this.data.items));
-            _this.render();
+            window.sessionStorage.setItem(
+              "items",
+              JSON.stringify(_this.data.items)
+            );
+
+            // Re-Render
+            _this.render(createProperties());
           });
 
           // For items to be moved to "done" section by component "toto-list.js"
@@ -60,8 +93,13 @@
               return item.id === event.detail.itemId;
             });
             item.class = "done";
-            window.sessionStorage.setItem("items", JSON.stringify(_this.data.items));
-            _this.render();
+            window.sessionStorage.setItem(
+              "items",
+              JSON.stringify(_this.data.items)
+            );
+
+            // Re-Render
+            _this.render(createProperties());
           });
 
           // For items to be "deleted" by component "todo-list.js"
@@ -70,15 +108,21 @@
               return item.id === event.detail.itemId;
             });
             item.class = "";
-            window.sessionStorage.setItem("items", JSON.stringify(_this.data.items));
-            _this.render();
+            window.sessionStorage.setItem(
+              "items",
+              JSON.stringify(_this.data.items)
+            );
+            // Only re-create the done list component.
+            // A full re-render is also possible,
+            // but this way is more precise and therefore more performant.
+            _this.bump(createProperties()[1].prop, "todoList", "2");
           });
 
           // Load items from session storage
           var storage = window.sessionStorage.getItem("items");
           if (storage) this.data.items = JSON.parse(storage);
 
-          this.render();
+          this.render(createProperties());
         }
       },
       selector,

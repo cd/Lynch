@@ -63,12 +63,10 @@
           this.data._el.addEventListener("click", buttonHandler);
 
           // Get class of component (todo list or done list)
-          this.data.class = this.data._el.dataset.mojitoId;
+          this.data.class = this.data._prop.class;
 
           // Get specific items from parent component
-          this.data.items = this.data._data.items.filter(function(item) {
-            return item.class === _this.data._el.dataset.mojitoId;
-          });
+          this.data.items = this.data._prop.items;
 
           this.render();
         }

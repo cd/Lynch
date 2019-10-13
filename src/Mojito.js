@@ -24,7 +24,7 @@ var Mojito = (function() {
     this.childComponents = [];
   };
 
-  Mojito.version = "0.13.1";
+  Mojito.version = "0.14.0";
 
   /**
    * Registered Mojito components
@@ -42,22 +42,26 @@ var Mojito = (function() {
   Mojito.debug = false;
 
   /**
-   * Disable the render function (for debugging purposes)
+   * Disable the render and bump function (for debugging purposes)
    */
   Mojito.disableRender = false;
 
   /**
    * Render all
    */
-  Mojito.prototype.render = function() {
-    if(Mojito.disableRender) return;
-
-    // Do nothing if the element is no longer part of the DOM
-    if (!this.element.parentNode) return;
+  Mojito.prototype.render = function(properties) {
+    if (Mojito.disableRender) return;
 
     this.destroyChildComponents(true);
-    this.renderComponent();
-    this.createChildComponents();
+
+    // Do nothing if the element is no longer part of the DOM
+    if (!this.element || !this.element.parentNode) return;
+
+    var rebuilt = this.renderComponent();
+
+    this.createChildComponents(properties);
+
+    return rebuilt;
   };
 
   /**
@@ -65,7 +69,6 @@ var Mojito = (function() {
    */
   Mojito.prototype.destroyChildComponents = function(rootCalled) {
     this.childComponents.forEach(function(element) {
-      element.destroyChildComponents(false);
       element.destroy(rootCalled);
     });
     this.childComponents = [];
@@ -75,6 +78,9 @@ var Mojito = (function() {
    * Destroy component
    */
   Mojito.prototype.destroy = function(rootCalled) {
+    // Destroy all child components
+    this.destroyChildComponents(false);
+
     // Call 'beforeDestroy' hook (e.g. to clear timer)
     if (this.beforeDestroy) {
       this.beforeDestroy.call({
@@ -83,11 +89,11 @@ var Mojito = (function() {
     }
 
     // The element does not need to be removed from the DOM
-    // if the parent item is also removed soon.
+    // because a parent item will be removed in a higher level.
     if (!rootCalled) return;
 
     // Do nothing if the element is no longer part of the DOM
-    if (!this.element.parentNode) return;
+    if (!this.element || !this.element.parentNode) return;
 
     // Remove all elements
     this.element.innerHTML = "";
@@ -111,7 +117,7 @@ var Mojito = (function() {
     var generatedHTML = this.template.call({ data: this.data });
 
     // If the generated HTML is equal to the current rendered HTML, do nothing.
-    if (this.element.innerHTML === generatedHTML) return;
+    if (this.element.innerHTML === generatedHTML) return false;
 
     // If debug mode is enabled, add a random colored border to the component.
     if (Mojito.debug) {
@@ -125,50 +131,88 @@ var Mojito = (function() {
 
     // Replace the current HTML
     this.element.innerHTML = generatedHTML;
+    return true;
   };
 
   /**
    * Create child components.
    */
-  Mojito.prototype.createChildComponents = function() {
+  Mojito.prototype.createChildComponents = function(properties) {
+    properties = properties || [];
     var childComponentElements = this.element.querySelectorAll(
       "[data-mojito-comp]"
     );
-    childComponentElements = Array.prototype.slice.call(childComponentElements); // IE workaround
+
+    // IE workaround
+    childComponentElements = Array.prototype.slice.call(childComponentElements);
+
     var _this = this;
     this.childComponents = [];
     childComponentElements.forEach(function(element) {
       var componentName = element.dataset.mojitoComp || "";
       var componentId = element.dataset.mojitoId || null;
-      var compontentSelector = '[data-mojito-comp="' + componentName + '"]';
-      if (componentId)
-        compontentSelector += '[data-mojito-id="' + componentId + '"]';
-
-      // Prevent duplicate components (due to recursive render and build calls)
-      var duplicates = _this.childComponents.filter(function(childComponent) {
-        return childComponent.selector === compontentSelector;
-      }).length;
-      if (duplicates) return;
-
-      if (Mojito.debug)
-        console.log(
-          _this.selector + " creates child component " + compontentSelector
-        );
-
-      // Create child component
-      var component = Mojito.components[componentName];
-      if (typeof component !== "function")
-        throw new Error("Mojito Component '" + componentName + "' not found");
-      _this.childComponents.push(
-        component(compontentSelector, _this.store).create(_this)
-      );
+      var property = null;
+      properties.forEach(function(el) {
+        if (componentName === el.component && componentId === (el.id || null))
+          property = el.prop;
+      });
+      _this.createChildComponent(property, componentName, componentId);
     });
+  };
+
+  Mojito.prototype.createChildComponent = function(
+    property,
+    componentName,
+    componentId
+  ) {
+    var compontentSelector = '[data-mojito-comp="' + componentName + '"]';
+    if (componentId)
+      compontentSelector += '[data-mojito-id="' + componentId + '"]';
+
+    // Prevent duplicate components
+    var duplicates = this.childComponents.filter(function(childComponent) {
+      return childComponent.selector === compontentSelector;
+    }).length;
+    if (duplicates) return;
+
+    if (Mojito.debug)
+      console.log(
+        this.selector + " creates child component " + compontentSelector
+      );
+
+    // Create child component
+    var component = Mojito.components[componentName];
+    if (typeof component !== "function")
+      throw new Error("Mojito Component '" + componentName + "' not found");
+    this.childComponents.push(
+      component(compontentSelector, this.store).create(this, property)
+    );
+  };
+
+  /**
+   * Re-create component
+   */
+  Mojito.prototype.bump = function(property, componentName, componentId) {
+    if (Mojito.disableRender) return;
+
+    var compontentSelector = '[data-mojito-comp="' + componentName + '"]';
+    if (componentId)
+      compontentSelector += '[data-mojito-id="' + componentId + '"]';
+
+    for (var i = 0; i < this.childComponents.length; i++) {
+      if (this.childComponents[i].selector === compontentSelector) {
+        this.childComponents[i].destroy(true);
+        this.childComponents.splice(i, 1);
+      }
+    }
+
+    this.createChildComponent(property, componentName, componentId);
   };
 
   /**
    * Create component flow
    */
-  Mojito.prototype.create = function(parentComponent) {
+  Mojito.prototype.create = function(parentComponent, prop) {
     parentComponent = parentComponent || { element: document, data: null };
 
     // 1. Grab element from DOM
@@ -178,11 +222,13 @@ var Mojito = (function() {
     this.data._data = parentComponent.data;
     this.data._el = this.element;
     this.data._selector = this.selector;
+    this.data._prop = prop;
 
     // 3. Call created function of the component
     this.created.call({
       data: this.data,
-      render: this.render.bind(this)
+      render: this.render.bind(this),
+      bump: this.bump.bind(this)
     });
 
     return this;
