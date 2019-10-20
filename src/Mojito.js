@@ -24,7 +24,7 @@ var Mojito = (function() {
     this.childComponents = [];
   };
 
-  Mojito.version = "0.14.0";
+  Mojito.version = "0.15.0";
 
   /**
    * Registered Mojito components
@@ -98,9 +98,6 @@ var Mojito = (function() {
     // Remove all elements
     this.element.innerHTML = "";
 
-    // Remove border style that was later added by debug mode.
-    if (Mojito.debug) this.element.removeAttribute("style");
-
     // Delete all event listeners (clone and replace element)
     var clone = this.element.cloneNode(true);
     this.element.parentNode.replaceChild(clone, this.element);
@@ -118,16 +115,6 @@ var Mojito = (function() {
 
     // If the generated HTML is equal to the current rendered HTML, do nothing.
     if (this.element.innerHTML === generatedHTML) return false;
-
-    // If debug mode is enabled, add a random colored border to the component.
-    if (Mojito.debug) {
-      console.log("Render component " + this.selector);
-      var colorR = Math.round(Math.random() * 255);
-      var colorG = Math.round(Math.random() * 255);
-      var colorB = Math.round(Math.random() * 255);
-      this.element.style.border =
-        "3px solid rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
-    }
 
     // Replace the current HTML
     this.element.innerHTML = generatedHTML;
