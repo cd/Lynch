@@ -69,14 +69,14 @@ Result:
 </body>
 ```
 
-And this is what happens: When you call the `create()` method of the component definition object, the component will be created and the `created` hook will be called. The `created` hook contains the most logic of your app (add or listen to events, set timers, do XHR requests and so on). In this example, it modifies the data object and renders the component.
+And this is what happens: When you call the `create()` method of the component definition object, the component will be created and the `created` hook will be called. The `created` hook contains the most logic of your app (add or listen to events, set timers, do XHR and so on). In this example, it modifies the data object and renders the component.
 
 To render a component means, the template function will be called. The function returns an HTML string based on the data object. The returned string will be parsed and included inside the DOM element of the component.
 
 You can also create components inside other components. You just have to register the component definition object to Mojito and put it in parents HTML template with the special `[data-mojito-comp]` attribute:
 
 ```javascript
-// Child component definitions have to wrapped in a function like this
+// Child component definitions have to be wrapped in a function like this
 Mojito.components.myChildComponent = function(selector) {
   return (
     new Mojito(
@@ -125,13 +125,62 @@ return new Mojito(
         '<div data-mojito-comp="myChildComponent" data-mojito-id="2"></div>' +
         '<div data-mojito-comp="myChildComponent" data-mojito-id="three"></div>';
       return html;
+    },
+    created: function() {
+      this.render();
     }
   },
   "[data-mojito-app]"
 ).create();
 ```
 
-Inside a child's component, you can access the parent's data object as a property of the own data object with `this.data._data`. Attention: This is a reference to the parent data object. Any changes here affect the parent's data object (this is bad practice).
+There are several ways to supply the child component with data:
+
+1. Inside a child component, you can access the parent's data object as a property of the own data object with `this.data._data`. Attention: This is a reference to the parent data object. Any changes here affect the parent's data object (bad practice).
+
+2. You can add data to the DOM element of the child component (e.g. with the data-attribute). Within the child component you can access the data: `this.data._el.dataset`
+
+3. You can use properties to add data to the component. If you render the parent component, you have to pass a property object to the `render()` method:
+    ```javascript
+    // Main component
+    return new Mojito(
+      {
+        template: function() {
+          var html =
+            "<h1>Component inside a component</h1>" +
+            '<div data-mojito-comp="myChildComponent" data-mojito-id="1"></div>' +
+            '<div data-mojito-comp="myChildComponent" data-mojito-id="2"></div>' +
+            '<div data-mojito-comp="myChildComponent" data-mojito-id="three"></div>';
+          return html;
+        },
+        created: function() {
+          // Pass an array of properties
+          this.render([
+            {
+              // Component name
+              component: "myChildComponent",
+
+              // Component ID (not necessary as soon as there is only one component)
+              id: "2",
+
+              // Component's data
+              prop: "Special child data"
+            },
+            {
+              component: "myChildComponent",
+              id: "three",
+              prop: {
+                special: "data",
+                superSpecial: ["some", "thing"]
+              }
+            }
+          ]);
+        }
+      },
+      "[data-mojito-app]"
+    ).create();
+    ```
+    Inside the child component you can access the data via `this.data._prop`.
 
 ## Lifecycle of a component
 
@@ -139,7 +188,7 @@ Inside a child's component, you can access the parent's data object as a propert
 
 2. Mojito grabs the element from DOM with the specified selector.
 
-3. Add parent's data, the DOM element and the selector name to components data (accessible via `this.data._data`, `this.data._el` and `this.data._selector`).
+3. Add parent's data, the DOM element, the selector name and the property to components data (accessible via `this.data._data`, `this.data._el`, `this.data._selector` and `this.data._prop`).
 
 4. Call the `created` hook of the component.
 
@@ -153,33 +202,42 @@ To avoid unwanted side effects or performance issues, it's very important to kno
 - If a child component needs parent's data to work, render the child component when the data is available.
 - If a component has a lot of child components, try to minimize the use of `this.render()`. Every time, a component renders, all child components will be destroyed and recreated (and their child components too, etc.).
 - If a part of your app needs a render many times, wrap it inside an extra component to avoid a re-render of static content and unnecessary re-creations of child components.
-- Clear timers in the `beforeDestroy` hook:
+- If a component has many child components and you want to update just one child component, make use of the `this.bump()` method:
+    ```javascript
+    this.bump(myPropertyObj, 'myChildComponent');
+    ```
+    or
+    ```javascript
+    this.bump(myPropertyObj, 'myChildComponent', 'componentId');
+    ```
+  This initiates a re-creation of the component and passes a property object to the child component.
+- If you hold a DOM reference in your data, be aware that after each `this.render()` the DOM _could_ be rebuilt and the reference leads nowhere anymore. In this case, check the return value of the `render` method:
+    ```javascript
+    var domIsRebuild = this.render();
+    if (domIsRebuild) {
+      // all references are lost
+    }
+    ```
+- Clear timers and DOM references in the `beforeDestroy` hook:
   ```javascript
   // ...
   created: function() {
     // ...
     this.data.myTimerId = window.setInterval(myFnc, 1000);
+    this.data.myElement = this.data._el.querySelector('canvas');
     // ...
   },
   beforeDestroy: function() {
     window.clearInterval(this.data.myTimerId);
+    this.data.myElement = null;
   }
   // ...
   ```
-- Make use of the Mojito debug mode. It adds a random colored border to each component element. You can see the structure of the app and you can also see when a component is rendered. Further information is also output via `console.log`. You can activate the debug mode like this:
+- Make use of the Mojito debug mode and watch to the web console. You can activate the debug mode like this:
   ```javascript
   Mojito.debug = true;
   ```
-  It's recommended to set the flag before the root component is rendered. If you use this feature, make sure that the component element has no inline styles.
 - You shouldn't manipulate parents object. Use e.g. Custom Events to send data to the parent.
-- If you want to send specific information to a child component, use the data attribute of the DOM element:
-  ```javascript
-  return new Mojito({
-    template: function() {
-      return '<div data-mojito-comp="myChildComponent" data-my-info-message="super component 123"></div>';
-    }
-  });
-  ```
 - Use the [scaffords](https://github.com/cd/mojito/tree/master/scaffold).
 - Study the [examples](https://github.com/cd/mojito/tree/master/examples).
 - If you want to inspect the DOM, it may be helpful to globally disable the render function. All you have to do is type `Mojito.disableRender = true` into the console or place it in your code.
