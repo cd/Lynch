@@ -24,7 +24,7 @@ var Mojito = (function() {
     this.childComponents = [];
   };
 
-  Mojito.version = "0.16.0";
+  Mojito.version = "0.16.1";
 
   /**
    * Registered Mojito components
@@ -120,6 +120,8 @@ var Mojito = (function() {
 
     // Replace the current HTML
     this.element.innerHTML = generatedHTML;
+
+    if (Mojito.debug) console.log(this.selector + " rendered");
     return true;
   };
 
