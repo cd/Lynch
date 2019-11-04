@@ -24,7 +24,7 @@ var Mojito = (function() {
     this.childComponents = [];
   };
 
-  Mojito.version = "0.15.0";
+  Mojito.version = "0.16.0";
 
   /**
    * Registered Mojito components
@@ -88,6 +88,8 @@ var Mojito = (function() {
       });
     }
 
+    if (Mojito.debug) console.log(this.selector + " destroyed");
+
     // The element does not need to be removed from the DOM
     // because a parent item will be removed in a higher level.
     if (!rootCalled) return;
@@ -102,7 +104,7 @@ var Mojito = (function() {
     var clone = this.element.cloneNode(true);
     this.element.parentNode.replaceChild(clone, this.element);
 
-    if (Mojito.debug) console.log("Component destroyed: " + this.selector);
+    if (Mojito.debug) console.log(this.selector + " removed from DOM");
   };
 
   /**
@@ -167,13 +169,17 @@ var Mojito = (function() {
         this.selector + " creates child component " + compontentSelector
       );
 
-    // Create child component
-    var component = Mojito.components[componentName];
-    if (typeof component !== "function")
+    // Get component constructor
+    var componentConstructor = Mojito.components[componentName];
+    if (typeof componentConstructor !== "function")
       throw new Error("Mojito Component '" + componentName + "' not found");
-    this.childComponents.push(
-      component(compontentSelector, this.store).create(this, property)
-    );
+
+    // Prepare child component
+    var component = componentConstructor(compontentSelector, this.store);
+    this.childComponents.push(component);
+
+    // Create component
+    component.create(this, property);
   };
 
   /**
