@@ -2,19 +2,19 @@
   "use strict";
 
   // No further execution if Mojio is not available
-  if (typeof Mojito !== "function" || !Mojito.components)
-    throw new Error("Mojito not found");
+  if (typeof Lynch !== "function" || !Lynch.components)
+    throw new Error("Lynch not found");
 
-  // Register 'viewTasks' component to Mojito
-  Mojito.components.viewTasks = function(selector, store) {
-    return new Mojito(
+  // Register 'viewTasks' component to Lynch
+  Lynch.components.viewTasks = function(selector, store) {
+    return new Lynch(
       {
         template: function() {
-          var html = '<div class="box" data-mojito-comp="todoForm"></div>';
+          var html = '<div class="box" data-lynch-comp="todoForm"></div>';
           html +=
-            '<div class="box" data-mojito-comp="todoList" data-mojito-id="1"></div>';
+            '<div class="box" data-lynch-comp="todoList" data-lynch-id="1"></div>';
           html +=
-            '<div class="box" data-mojito-comp="todoList" data-mojito-id="2"></div>';
+            '<div class="box" data-lynch-comp="todoList" data-lynch-id="2"></div>';
           return html;
         },
 

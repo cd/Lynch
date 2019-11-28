@@ -2,11 +2,11 @@
   "use strict";
 
   // No further execution if Mojio is not available
-  if (typeof Mojito !== "function" || !Mojito.components)
-    throw new Error("Mojito not found");
+  if (typeof Lynch !== "function" || !Lynch.components)
+    throw new Error("Lynch not found");
 
-  // Register 'helper' utility to Mojito
-  Mojito.utils.helper = {
+  // Register 'helper' utility to Lynch
+  Lynch.utils.helper = {
     /**
      * Super simple routing function.
      * @returns {string} Name of component to render.

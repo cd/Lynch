@@ -1,8 +1,8 @@
 (function() {
   "use strict";
 
-  if (typeof Mojito !== "function" || !Mojito.components)
-    throw new Error("Mojito not found");
+  if (typeof Lynch !== "function" || !Lynch.components)
+    throw new Error("Lynch not found");
 
   var store = {
     availableLanguages: ["en", "de"],
@@ -14,20 +14,20 @@
       add: ["Add Task", "Aufgabe hinzufügen"],
       selectLanguage: ["Select language", "Sprache auswählen"]
     },
-    title: "To-Do-List (Mojito Demo)"
+    title: "To-Do-List (Lynch Demo)"
   };
 
-  return new Mojito(
+  return new Lynch(
     {
       template: function() {
-        var html = '<div data-mojito-comp="header"></div>';
+        var html = '<div data-lynch-comp="header"></div>';
 
         // No further rendering if main component name
         // is not defined yet.
         if (!this.data.componentName) return html;
 
         html += "<main>";
-        html += '  <div data-mojito-comp="' + this.data.componentName + '"></div>';
+        html += '  <div data-lynch-comp="' + this.data.componentName + '"></div>';
         html += "</main>";
         return html;
       },
@@ -52,11 +52,11 @@
           Number(window.sessionStorage.getItem("lang")) || 0;
 
         // Set main component by routing function. Finally, render all.
-        this.data.componentName = Mojito.utils.helper.getComponentNameByURL();
+        this.data.componentName = Lynch.utils.helper.getComponentNameByURL();
         this.render();
       }
     },
-    "[data-mojito-app]",
+    "[data-lynch-app]",
     store
   ).create();
 })();

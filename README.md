@@ -1,12 +1,12 @@
-# Mojito
+# Lynch
 
 A super tiny JavaScript framework for web apps. It's just 0.8 kb minified and gzipped!
 
 ## Live Demo
 
-[👉 **Check out the Live Demo!**](https://cd.github.io/mojito/examples/todo-list/)
+[👉 **Check out the Live Demo!**](https://cd.github.io/Lynch/examples/todo-list/)
 
-In this simple example you can see the full power of Mojito and vanilla JavaScript:
+In this simple example you can see the full power of Lynch and vanilla JavaScript:
 
 - Nested and reusable components
 - Isolated and shared data
@@ -16,19 +16,19 @@ In this simple example you can see the full power of Mojito and vanilla JavaScri
 
 ## Getting Started
 
-Just add Mojito to your HTML file, define the main component and call the `create()` method of the component definition object:
+Just add Lynch to your HTML file, define the main component and call the `create()` method of the component definition object:
 
 ```html
 <body>
   <!-- Render the component inside this element -->
-  <div data-mojito-app></div>
+  <div data-lynch-app></div>
 
-  <!-- Add Mojito -->
-  <script src="https://cdn.jsdelivr.net/gh/cd/mojito/src/Mojito.js"></script>
+  <!-- Add Lynch -->
+  <script src="https://cdn.jsdelivr.net/gh/cd/Lynch/src/Lynch.js"></script>
 
   <script>
     // Define main component
-    var myApp = new Mojito(
+    var myApp = new Lynch(
       {
         // Returns an HTML string which will be rendered
         // inside the selected DOM element.
@@ -38,7 +38,7 @@ Just add Mojito to your HTML file, define the main component and call the `creat
 
         // Component's data
         data: {
-          myText: "Hello Mojito!"
+          myText: "Hello Lynch!"
         },
 
         // Created hook. This is where most things happen.
@@ -50,7 +50,7 @@ Just add Mojito to your HTML file, define the main component and call the `creat
           this.render()
         }
       },
-      "[data-mojito-app]", // DOM element selector
+      "[data-lynch-app]", // DOM element selector
     );
 
     // Create the component
@@ -64,7 +64,7 @@ Result:
 ```html
 <body>
   <div data-mojoto-app>
-    <strong>Hello Mojito! Love it ❤️</strong>
+    <strong>Hello Lynch! Love it ❤️</strong>
   </div>
 </body>
 ```
@@ -73,13 +73,13 @@ And this is what happens: When you call the `create()` method of the component d
 
 To render a component means, the template function will be called. The function returns an HTML string based on the data object. The returned string will be parsed and included inside the DOM element of the component.
 
-You can also create components inside other components. You just have to register the component definition object to Mojito and put it in parents HTML template with the special `[data-mojito-comp]` attribute:
+You can also create components inside other components. You just have to register the component definition object to Lynch and put it in parents HTML template with the special `[data-lynch-comp]` attribute:
 
 ```javascript
 // Child component definitions have to be wrapped in a function like this
-Mojito.components.myChildComponent = function(selector) {
+Lynch.components.myChildComponent = function(selector) {
   return (
-    new Mojito(
+    new Lynch(
       {
         template: function() {
           return "Hello from child component!";
@@ -94,43 +94,43 @@ Mojito.components.myChildComponent = function(selector) {
 };
 
 // Main component
-return new Mojito(
+return new Lynch(
   {
     template: function() {
       var html =
         "<h1>Component inside a component</h1>" +
-        '<div data-mojito-comp="myChildComponent"></div>';
+        '<div data-lynch-comp="myChildComponent"></div>';
       return html;
     },
     created: function() {
       this.render();
     }
   },
-  "[data-mojito-app]"
+  "[data-lynch-app]"
 ).create();
 ```
 
-And that's going on: The `create` method of the main component definition is called immediately. The main component is also created immediately. The created hook of the main component is called and renders the component to the DOM. After the component is rendered, there is an empty DOM element inside: `<div data-mojito-comp="myChildComponent"></div>`. Mojito detects this element because of the special `data` attribute. It is looking for a component definition object with a name like the value of the attribute. Then the `create()` method will be called and the child component can render itself.
+And that's going on: The `create` method of the main component definition is called immediately. The main component is also created immediately. The created hook of the main component is called and renders the component to the DOM. After the component is rendered, there is an empty DOM element inside: `<div data-lynch-comp="myChildComponent"></div>`. Lynch detects this element because of the special `data` attribute. It is looking for a component definition object with a name like the value of the attribute. Then the `create()` method will be called and the child component can render itself.
 
-If you want to add the same component multiple times, you need to make them unique with the `data-mojito-id`:
+If you want to add the same component multiple times, you need to make them unique with the `data-lynch-id`:
 
 ```javascript
 // Main component
-return new Mojito(
+return new Lynch(
   {
     template: function() {
       var html =
         "<h1>Component inside a component</h1>" +
-        '<div data-mojito-comp="myChildComponent" data-mojito-id="1"></div>' +
-        '<div data-mojito-comp="myChildComponent" data-mojito-id="2"></div>' +
-        '<div data-mojito-comp="myChildComponent" data-mojito-id="three"></div>';
+        '<div data-lynch-comp="myChildComponent" data-lynch-id="1"></div>' +
+        '<div data-lynch-comp="myChildComponent" data-lynch-id="2"></div>' +
+        '<div data-lynch-comp="myChildComponent" data-lynch-id="three"></div>';
       return html;
     },
     created: function() {
       this.render();
     }
   },
-  "[data-mojito-app]"
+  "[data-lynch-app]"
 ).create();
 ```
 
@@ -143,14 +143,14 @@ There are several ways to supply the child component with data:
 3. You can use properties to add data to the component. If you render the parent component, you have to pass a property object to the `render()` method:
     ```javascript
     // Main component
-    return new Mojito(
+    return new Lynch(
       {
         template: function() {
           var html =
             "<h1>Component inside a component</h1>" +
-            '<div data-mojito-comp="myChildComponent" data-mojito-id="1"></div>' +
-            '<div data-mojito-comp="myChildComponent" data-mojito-id="2"></div>' +
-            '<div data-mojito-comp="myChildComponent" data-mojito-id="three"></div>';
+            '<div data-lynch-comp="myChildComponent" data-lynch-id="1"></div>' +
+            '<div data-lynch-comp="myChildComponent" data-lynch-id="2"></div>' +
+            '<div data-lynch-comp="myChildComponent" data-lynch-id="three"></div>';
           return html;
         },
         created: function() {
@@ -177,7 +177,7 @@ There are several ways to supply the child component with data:
           ]);
         }
       },
-      "[data-mojito-app]"
+      "[data-lynch-app]"
     ).create();
     ```
     Inside the child component you can access the data via `this.data._prop`.
@@ -186,7 +186,7 @@ There are several ways to supply the child component with data:
 
 1. The lifecycle starts with the `create()` call of the component definition object.
 
-2. Mojito grabs the element from DOM with the specified selector.
+2. Lynch grabs the element from DOM with the specified selector.
 
 3. Add parent's data, the DOM element, the selector name and the property to components data (accessible via `this.data._data`, `this.data._el`, `this.data._selector` and `this.data._prop`).
 
@@ -196,7 +196,7 @@ There are several ways to supply the child component with data:
 
 ## Best Practice and Tips
 
-To avoid unwanted side effects or performance issues, it's very important to know, how Mojito works. Here are some hints:
+To avoid unwanted side effects or performance issues, it's very important to know, how Lynch works. Here are some hints:
 
 - Ensure, that the component calls `this.render()`. Otherwise, nothing happens.
 - If a child component needs parent's data to work, render the child component when the data is available.
@@ -233,11 +233,11 @@ To avoid unwanted side effects or performance issues, it's very important to kno
   }
   // ...
   ```
-- Make use of the Mojito debug mode and watch to the web console. You can activate the debug mode like this:
+- Make use of the Lynch debug mode and watch to the web console. You can activate the debug mode like this:
   ```javascript
-  Mojito.debug = true;
+  Lynch.debug = true;
   ```
 - You shouldn't manipulate parents object. Use e.g. Custom Events to send data to the parent.
-- Use the [scaffords](https://github.com/cd/mojito/tree/master/scaffold).
-- Study the [examples](https://github.com/cd/mojito/tree/master/examples).
-- If you want to inspect the DOM, it may be helpful to globally disable the render function. All you have to do is type `Mojito.disableRender = true` into the console or place it in your code.
+- Use the [scaffords](https://github.com/cd/Lynch/tree/master/scaffold).
+- Study the [examples](https://github.com/cd/Lynch/tree/master/examples).
+- If you want to inspect the DOM, it may be helpful to globally disable the render function. All you have to do is type `Lynch.disableRender = true` into the console or place it in your code.

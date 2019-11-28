@@ -1,12 +1,12 @@
 (function() {
   "use strict";
 
-  if (typeof Mojito !== "function" || !Mojito.components)
-    throw new Error("Mojito not found");
+  if (typeof Lynch !== "function" || !Lynch.components)
+    throw new Error("Lynch not found");
 
   var store = {};
 
-  return new Mojito(
+  return new Lynch(
     {
       template: function() {},
 
@@ -16,7 +16,7 @@
 
       beforeDestroy: function() {}
     },
-    "[data-mojito-app]",
+    "[data-lynch-app]",
     store
   ).create();
 })();

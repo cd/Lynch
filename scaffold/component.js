@@ -1,11 +1,11 @@
 (function() {
   "use strict";
 
-  if (typeof Mojito !== "function" || !Mojito.components)
-    throw new Error("Mojito not found");
+  if (typeof Lynch !== "function" || !Lynch.components)
+    throw new Error("Lynch not found");
 
-  Mojito.components.myComp = function(selector, store) {
-    return new Mojito(
+  Lynch.components.myComp = function(selector, store) {
+    return new Lynch(
       {
         template: function() {},
 

@@ -1,7 +1,7 @@
 /**
  * @class
  */
-var Mojito = (function() {
+var Lynch = (function() {
   "use strict";
 
   /**
@@ -9,7 +9,7 @@ var Mojito = (function() {
    * @param  {object} options
    * @param  {string} [selector]
    */
-  var Mojito = function(options, selector, store) {
+  var Lynch = function(options, selector, store) {
     // Return if no options provided
     if (!options) return;
 
@@ -27,35 +27,35 @@ var Mojito = (function() {
   };
 
   /**
-   * Mojito version
+   * Lynch version
    */
-  Mojito.version = "0.17.0";
+  Lynch.version = "0.18.0";
 
   /**
-   * Registered Mojito components
+   * Registered Lynch components
    */
-  Mojito.components = {};
+  Lynch.components = {};
 
   /**
    * All kinds of utilities and helper functions. Accessible from every component
    */
-  Mojito.utils = {};
+  Lynch.utils = {};
 
   /**
    * Debug info
    */
-  Mojito.debug = false;
+  Lynch.debug = false;
 
   /**
    * Disable the render and bump function (for debugging purposes)
    */
-  Mojito.disableRender = false;
+  Lynch.disableRender = false;
 
   /**
    * Render all
    */
-  Mojito.prototype.render = function(properties) {
-    if (Mojito.disableRender) return;
+  Lynch.prototype.render = function(properties) {
+    if (Lynch.disableRender) return;
 
     this.destroyChildComponents(true);
 
@@ -72,7 +72,7 @@ var Mojito = (function() {
   /**
    * Destroy all child components
    */
-  Mojito.prototype.destroyChildComponents = function(rootCalled) {
+  Lynch.prototype.destroyChildComponents = function(rootCalled) {
     this.childComponents.forEach(function(element) {
       element.destroy(rootCalled);
     });
@@ -82,7 +82,7 @@ var Mojito = (function() {
   /**
    * Destroy component
    */
-  Mojito.prototype.destroy = function(rootCalled) {
+  Lynch.prototype.destroy = function(rootCalled) {
     // Destroy all child components
     this.destroyChildComponents(false);
 
@@ -96,7 +96,7 @@ var Mojito = (function() {
     // Remove style elements from DOM
     this.removeStyleElements()
 
-    if (Mojito.debug) console.log(this.selector + " destroyed");
+    if (Lynch.debug) console.log(this.selector + " destroyed");
 
     // The element does not need to be removed from the DOM
     // because a parent item will be removed in a higher level.
@@ -112,14 +112,14 @@ var Mojito = (function() {
     var clone = this.element.cloneNode(true);
     this.element.parentNode.replaceChild(clone, this.element);
 
-    if (Mojito.debug) console.log(this.selector + " removed from DOM");
+    if (Lynch.debug) console.log(this.selector + " removed from DOM");
   };
 
   /**
    * Render only if the component itself has changed.
    * Note: Child components will be always re-created.
    */
-  Mojito.prototype.renderComponent = function() {
+  Lynch.prototype.renderComponent = function() {
     // Generate new HTML
     var generatedHTML = this.template.call({ data: this.data });
 
@@ -129,17 +129,17 @@ var Mojito = (function() {
     // Replace the current HTML
     this.element.innerHTML = generatedHTML;
 
-    if (Mojito.debug) console.log(this.selector + " rendered");
+    if (Lynch.debug) console.log(this.selector + " rendered");
     return true;
   };
 
   /**
    * Create all child components
    */
-  Mojito.prototype.createChildComponents = function(properties) {
+  Lynch.prototype.createChildComponents = function(properties) {
     properties = properties || [];
     var childComponentElements = this.element.querySelectorAll(
-      "[data-mojito-comp]"
+      "[data-lynch-comp]"
     );
 
     // IE workaround
@@ -147,8 +147,8 @@ var Mojito = (function() {
 
     this.childComponents = [];
     for (let i = 0; i < childComponentElements.length; i++) {
-      var componentName = childComponentElements[i].dataset.mojitoComp || "";
-      var componentId = childComponentElements[i].dataset.mojitoId || null;
+      var componentName = childComponentElements[i].dataset.lynchComp || "";
+      var componentId = childComponentElements[i].dataset.lynchId || null;
       var property = null;
       properties.forEach(function(el) {
         if (componentName === el.component && componentId === (el.id || null))
@@ -161,14 +161,14 @@ var Mojito = (function() {
   /**
    * Create single child component
    */
-  Mojito.prototype.createChildComponent = function(
+  Lynch.prototype.createChildComponent = function(
     property,
     componentName,
     componentId
   ) {
-    var compontentSelector = '[data-mojito-comp="' + componentName + '"]';
+    var compontentSelector = '[data-lynch-comp="' + componentName + '"]';
     if (componentId)
-      compontentSelector += '[data-mojito-id="' + componentId + '"]';
+      compontentSelector += '[data-lynch-id="' + componentId + '"]';
 
     // Prevent duplicate components
     var duplicates = this.childComponents.filter(function(childComponent) {
@@ -176,15 +176,15 @@ var Mojito = (function() {
     }).length;
     if (duplicates) return;
 
-    if (Mojito.debug)
+    if (Lynch.debug)
       console.log(
         this.selector + " creates child component " + compontentSelector
       );
 
     // Get component constructor
-    var componentConstructor = Mojito.components[componentName];
+    var componentConstructor = Lynch.components[componentName];
     if (typeof componentConstructor !== "function")
-      throw new Error("Mojito Component '" + componentName + "' not found");
+      throw new Error("Lynch Component '" + componentName + "' not found");
 
     // Prepare child component
     var component = componentConstructor(compontentSelector, this.store);
@@ -197,12 +197,12 @@ var Mojito = (function() {
   /**
    * Re-create child component
    */
-  Mojito.prototype.bump = function(property, componentName, componentId) {
-    if (Mojito.disableRender) return;
+  Lynch.prototype.bump = function(property, componentName, componentId) {
+    if (Lynch.disableRender) return;
 
-    var compontentSelector = '[data-mojito-comp="' + componentName + '"]';
+    var compontentSelector = '[data-lynch-comp="' + componentName + '"]';
     if (componentId)
-      compontentSelector += '[data-mojito-id="' + componentId + '"]';
+      compontentSelector += '[data-lynch-id="' + componentId + '"]';
 
     for (var i = 0; i < this.childComponents.length; i++) {
       if (this.childComponents[i].selector === compontentSelector) {
@@ -218,7 +218,7 @@ var Mojito = (function() {
    * Create and add style elements to the DOM.
    * Styling rules are subject to the scope of the component.
    */
-  Mojito.prototype.addStyleElements = function() {
+  Lynch.prototype.addStyleElements = function() {
     var selector = this.selector;
     for (let i = 0; i < this.styles.length; i++) {
       var styleElement = window.document.createElement("style");
@@ -245,7 +245,7 @@ var Mojito = (function() {
   /**
    * Remove all style elements from the DOM.
    */
-  Mojito.prototype.removeStyleElements = function() {
+  Lynch.prototype.removeStyleElements = function() {
     for (var i = 0; i < this.styleElements.length; i++) {
       window.document.head.removeChild(this.styleElements[i]);
     }
@@ -255,7 +255,7 @@ var Mojito = (function() {
   /**
    * Create component flow
    */
-  Mojito.prototype.create = function(parentComponent, prop) {
+  Lynch.prototype.create = function(parentComponent, prop) {
     parentComponent = parentComponent || { element: document, data: null };
 
     // 1. Grab element from DOM
@@ -280,5 +280,5 @@ var Mojito = (function() {
     return this;
   };
 
-  return Mojito;
+  return Lynch;
 })();
