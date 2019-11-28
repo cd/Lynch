@@ -182,6 +182,40 @@ There are several ways to supply the child component with data:
     ```
     Inside the child component you can access the data via `this.data._prop`.
 
+If you want to style a component with CSS, make use of the `styles` property. In this case, all CSS rules affect only the component itself and its child components:
+```javascript
+// ...
+    template: function() {
+      return '<div class="wrapper">CSS Style <strong>only</strong> in this component!</div>';
+    },
+
+    // Add an array of stylesheets
+    styles: [
+      {
+        // Two rules in the first stylesheet
+        rules: [
+          '.wrapper { font-weight: bold; border: 5px solid black; }',
+          '.wrapper > strong:hover { color: red; }'
+        ]
+      },
+      {
+        // Just one rule in the seconds stylesheet
+        rules: ['.wrapper { font-size: 0.9em; }'],
+
+        // Add a set of attributes if you want
+        attributes: [
+          // In this case just one attribute
+          ['media', 'only screen and (max-width: 50em)']
+        ]
+      }
+    ],
+
+    data: { /* ... */ },
+
+    created: function() { /* ... */ }
+// ...
+```
+
 ## Lifecycle of a component
 
 1. The lifecycle starts with the `create()` call of the component definition object.
