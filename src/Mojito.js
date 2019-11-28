@@ -18,13 +18,18 @@ var Mojito = (function() {
     this.element = null;
     this.data = options.data || {};
     this.template = options.template || null;
+    this.styles = options.styles || [];
+    this.styleElements = [];
     this.created = options.created || null;
     this.beforeDestroy = options.beforeDestroy || null;
     this.store = store || {};
     this.childComponents = [];
   };
 
-  Mojito.version = "0.16.1";
+  /**
+   * Mojito version
+   */
+  Mojito.version = "0.17.0";
 
   /**
    * Registered Mojito components
@@ -32,7 +37,7 @@ var Mojito = (function() {
   Mojito.components = {};
 
   /**
-   * All kinds of utilities and helper functions. Accessible from every component.
+   * All kinds of utilities and helper functions. Accessible from every component
    */
   Mojito.utils = {};
 
@@ -88,6 +93,9 @@ var Mojito = (function() {
       });
     }
 
+    // Remove style elements from DOM
+    this.removeStyleElements()
+
     if (Mojito.debug) console.log(this.selector + " destroyed");
 
     // The element does not need to be removed from the DOM
@@ -126,7 +134,7 @@ var Mojito = (function() {
   };
 
   /**
-   * Create child components.
+   * Create all child components
    */
   Mojito.prototype.createChildComponents = function(properties) {
     properties = properties || [];
@@ -137,20 +145,22 @@ var Mojito = (function() {
     // IE workaround
     childComponentElements = Array.prototype.slice.call(childComponentElements);
 
-    var _this = this;
     this.childComponents = [];
-    childComponentElements.forEach(function(element) {
-      var componentName = element.dataset.mojitoComp || "";
-      var componentId = element.dataset.mojitoId || null;
+    for (let i = 0; i < childComponentElements.length; i++) {
+      var componentName = childComponentElements[i].dataset.mojitoComp || "";
+      var componentId = childComponentElements[i].dataset.mojitoId || null;
       var property = null;
       properties.forEach(function(el) {
         if (componentName === el.component && componentId === (el.id || null))
           property = el.prop;
       });
-      _this.createChildComponent(property, componentName, componentId);
-    });
+      this.createChildComponent(property, componentName, componentId);
+    }
   };
 
+  /**
+   * Create single child component
+   */
   Mojito.prototype.createChildComponent = function(
     property,
     componentName,
@@ -185,7 +195,7 @@ var Mojito = (function() {
   };
 
   /**
-   * Re-create component
+   * Re-create child component
    */
   Mojito.prototype.bump = function(property, componentName, componentId) {
     if (Mojito.disableRender) return;
@@ -205,6 +215,44 @@ var Mojito = (function() {
   };
 
   /**
+   * Create and add style elements to the DOM.
+   * Styling rules are subject to the scope of the component.
+   */
+  Mojito.prototype.addStyleElements = function() {
+    var selector = this.selector;
+    for (let i = 0; i < this.styles.length; i++) {
+      var styleElement = window.document.createElement("style");
+
+      // Consider optional style attributes.
+      if (Array.isArray(this.styles[i].attributes)) {
+        this.styles[i].attributes.forEach(function(attribute) {
+          styleElement.setAttribute(attribute[0], attribute[1]);
+        });
+      }
+
+      // Add style element to DOM
+      window.document.head.appendChild(styleElement);
+
+      // Add rules
+      this.styles[i].rules.forEach(function(rule) {
+        // Set own selector at the beginning to create a styling scope.
+        styleElement.sheet.insertRule(selector + " " + rule);
+      });
+      this.styleElements.push(styleElement);
+    }
+  };
+
+  /**
+   * Remove all style elements from the DOM.
+   */
+  Mojito.prototype.removeStyleElements = function() {
+    for (var i = 0; i < this.styleElements.length; i++) {
+      window.document.head.removeChild(this.styleElements[i]);
+    }
+    this.styleElements = [];
+  };
+
+  /**
    * Create component flow
    */
   Mojito.prototype.create = function(parentComponent, prop) {
@@ -219,7 +267,10 @@ var Mojito = (function() {
     this.data._selector = this.selector;
     this.data._prop = prop;
 
-    // 3. Call created function of the component
+    // 3. Create and add (scoped) CSS styling
+    this.addStyleElements();
+
+    // 4. Call created function of the component
     this.created.call({
       data: this.data,
       render: this.render.bind(this),
