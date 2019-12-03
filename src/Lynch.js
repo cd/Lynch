@@ -29,7 +29,7 @@ var Lynch = (function() {
   /**
    * Lynch version
    */
-  Lynch.version = "0.18.1";
+  Lynch.version = "0.18.2";
 
   /**
    * Registered Lynch components
@@ -146,7 +146,7 @@ var Lynch = (function() {
     childComponentElements = Array.prototype.slice.call(childComponentElements);
 
     this.childComponents = [];
-    for (let i = 0; i < childComponentElements.length; i++) {
+    for (var i = 0; i < childComponentElements.length; i++) {
       var componentName = childComponentElements[i].dataset.lynchComp || "";
       var componentId = childComponentElements[i].dataset.lynchId || null;
       var property = null;
@@ -220,7 +220,7 @@ var Lynch = (function() {
    */
   Lynch.prototype.addStyleElements = function() {
     var selector = this.selector;
-    for (let i = 0; i < this.styles.length; i++) {
+    for (var i = 0; i < this.styles.length; i++) {
       var styleElement = window.document.createElement("style");
 
       // Consider optional style attributes.
