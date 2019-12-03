@@ -29,7 +29,7 @@ var Lynch = (function() {
   /**
    * Lynch version
    */
-  Lynch.version = "0.18.0";
+  Lynch.version = "0.18.1";
 
   /**
    * Registered Lynch components
@@ -236,7 +236,10 @@ var Lynch = (function() {
       // Add rules
       this.styles[i].rules.forEach(function(rule) {
         // Set own selector at the beginning to create a styling scope.
-        styleElement.sheet.insertRule(selector + " " + rule);
+        styleElement.sheet.insertRule(
+          selector + " " + rule,
+          styleElement.sheet.cssRules.length
+        );
       });
       this.styleElements.push(styleElement);
     }
