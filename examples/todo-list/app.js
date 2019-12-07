@@ -12,7 +12,9 @@
       tasks: ["Tasks", "Aufgaben"],
       done: ["Done", "Erledigt"],
       add: ["Add Task", "Aufgabe hinzufügen"],
-      selectLanguage: ["Select language", "Sprache auswählen"]
+      selectLanguage: ["Select language", "Sprache auswählen"],
+      reset: ["Reset", "Zurücksetzen"],
+      resetToDefault: ["Reset to default", "Zurücksetzen auf Ursprung"]
     },
     title: "To-Do-List (Lynch Demo)"
   };
@@ -27,7 +29,8 @@
         if (!this.data.componentName) return html;
 
         html += "<main>";
-        html += '  <div data-lynch-comp="' + this.data.componentName + '"></div>';
+        html +=
+          '  <div data-lynch-comp="' + this.data.componentName + '"></div>';
         html += "</main>";
         return html;
       },
@@ -38,13 +41,18 @@
 
       created: function() {
         // IE 11 support (no arrow functions)
-          var _this = this;
+        var _this = this;
 
         // Register event listener
         this.data._el.addEventListener("changeLanguage", function(event) {
           store.currentLanguage = event.detail.language;
           window.sessionStorage.setItem("lang", store.currentLanguage);
           _this.render();
+        });
+        this.data._el.addEventListener("reset", function() {
+          window.sessionStorage.removeItem("lang");
+          window.sessionStorage.removeItem("items");
+          window.location.href = "index.html";
         });
 
         // Set inital language

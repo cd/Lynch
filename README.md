@@ -1,18 +1,19 @@
 # Lynch
 
-A super tiny JavaScript framework for web apps. It's just 0.8 kb minified and gzipped!
+A very minimalistic JavaScript front-end framework for web apps. It's just 1.1 kb minified and gzipped!
 
 ## Live Demo
 
 [👉 **Check out the Live Demo!**](https://cd.github.io/Lynch/examples/todo-list/)
 
-In this simple example you can see the full power of Lynch and vanilla JavaScript:
+In this simple example you can see the full power of Lynch and pure JavaScript:
 
 - Nested and reusable components
 - Isolated and shared data
 - Reuseable functions
 - Events / Reactivity
 - Routing
+- Scoped CSS
 
 ## Getting Started
 
@@ -24,7 +25,7 @@ Just add Lynch to your HTML file, define the main component and call the `create
   <div data-lynch-app></div>
 
   <!-- Add Lynch -->
-  <script src="https://cdn.jsdelivr.net/gh/cd/Lynch/src/Lynch.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/cd/Lynch/src/Lynch.min.js"></script>
 
   <script>
     // Define main component
