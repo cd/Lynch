@@ -14,6 +14,7 @@ In this simple example you can see the full power of Lynch and pure JavaScript:
 - Events / Reactivity
 - Routing
 - Scoped CSS
+- IE 11 Support
 
 ## Getting Started
 
