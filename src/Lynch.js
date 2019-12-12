@@ -29,7 +29,7 @@ var Lynch = (function() {
   /**
    * Lynch version
    */
-  Lynch.version = "0.18.2";
+  Lynch.version = "0.18.3";
 
   /**
    * Registered Lynch components
@@ -94,7 +94,7 @@ var Lynch = (function() {
     }
 
     // Remove style elements from DOM
-    this.removeStyleElements()
+    this.removeStyleElements();
 
     if (Lynch.debug) console.log(this.selector + " destroyed");
 
@@ -235,11 +235,22 @@ var Lynch = (function() {
 
       // Add rules
       this.styles[i].rules.forEach(function(rule) {
-        // Set own selector at the beginning to create a styling scope.
-        styleElement.sheet.insertRule(
-          selector + " " + rule,
-          styleElement.sheet.cssRules.length
-        );
+        rule = rule.trim();
+
+        // Add component selector before each rule selector
+        // (except for special selectors like '@keyframes')
+        if (rule.indexOf("@") === -1) {
+          var splitted = rule.split("{");
+          rule =
+            selector +
+            " " +
+            splitted[0].replace(/,/g, "," + selector + " ") +
+            "{" +
+            splitted[1];
+        }
+
+        // Insert rule to style element
+        styleElement.sheet.insertRule(rule, styleElement.sheet.cssRules.length);
       });
       this.styleElements.push(styleElement);
     }
