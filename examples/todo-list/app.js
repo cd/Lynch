@@ -40,14 +40,11 @@
       },
 
       created: function() {
-        // IE 11 support (no arrow functions)
-        var _this = this;
-
         // Register event listener
         this.data._el.addEventListener("changeLanguage", function(event) {
           store.currentLanguage = event.detail.language;
           window.sessionStorage.setItem("lang", store.currentLanguage);
-          _this.render();
+          window.location.reload();
         });
         this.data._el.addEventListener("reset", function() {
           window.sessionStorage.removeItem("lang");

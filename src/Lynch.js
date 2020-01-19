@@ -24,12 +24,13 @@ var Lynch = (function() {
     this.beforeDestroy = options.beforeDestroy || null;
     this.store = store || {};
     this.childComponents = [];
+    this.dataString = null;
   };
 
   /**
    * Lynch version
    */
-  Lynch.version = "0.18.3";
+  Lynch.version = "0.19.0";
 
   /**
    * Registered Lynch components
@@ -57,16 +58,29 @@ var Lynch = (function() {
   Lynch.prototype.render = function(properties) {
     if (Lynch.disableRender) return;
 
+    // Create string of the current data to compare with the old data
+    var dataObj = {};
+    for (var prop in this.data) {
+      if (prop[0] !== "_") dataObj[prop] = this.data[prop];
+    }
+    var dataString = JSON.stringify(dataObj);
+
+    // Do not render if the data string has not changed
+    if (this.dataString === dataString) return false;
+
+    // Save the new data string
+    this.dataString = dataString;
+
     this.destroyChildComponents(true);
 
     // Do nothing if the element is no longer part of the DOM
-    if (!this.element || !this.element.parentNode) return;
+    if (!this.element || !this.element.parentNode) return false;
 
-    var rebuilt = this.renderComponent();
+    this.renderComponent();
 
     this.createChildComponents(properties);
 
-    return rebuilt;
+    return true;
   };
 
   /**
@@ -116,21 +130,11 @@ var Lynch = (function() {
   };
 
   /**
-   * Render only if the component itself has changed.
-   * Note: Child components will be always re-created.
+   * Render the component
    */
   Lynch.prototype.renderComponent = function() {
-    // Generate new HTML
-    var generatedHTML = this.template.call({ data: this.data });
-
-    // If the generated HTML is equal to the current rendered HTML, do nothing.
-    if (this.element.innerHTML === generatedHTML) return false;
-
-    // Replace the current HTML
-    this.element.innerHTML = generatedHTML;
-
+    this.element.innerHTML = this.template.call({ data: this.data });
     if (Lynch.debug) console.log(this.selector + " rendered");
-    return true;
   };
 
   /**

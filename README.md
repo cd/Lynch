@@ -259,13 +259,13 @@ To avoid unwanted side effects or performance issues, it's very important to kno
   // ...
   created: function() {
     // ...
-    this.data.myTimerId = window.setInterval(myFnc, 1000);
-    this.data.myElement = this.data._el.querySelector('canvas');
+    this.data._myTimerId = window.setInterval(myFnc, 1000);
+    this.data._myElement = this.data._el.querySelector('canvas');
     // ...
   },
   beforeDestroy: function() {
-    window.clearInterval(this.data.myTimerId);
-    this.data.myElement = null;
+    window.clearInterval(this.data._myTimerId);
+    this.data._myElement = null;
   }
   // ...
   ```
@@ -273,7 +273,7 @@ To avoid unwanted side effects or performance issues, it's very important to kno
   ```javascript
   Lynch.debug = true;
   ```
-- You shouldn't manipulate parents object. Use e.g. Custom Events to send data to the parent.
+- You shouldn't manipulate parents object.
 - Use the [scaffords](https://github.com/cd/Lynch/tree/master/scaffold).
 - Study the [examples](https://github.com/cd/Lynch/tree/master/examples).
 - If you want to inspect the DOM, it may be helpful to globally disable the render function. All you have to do is type `Lynch.disableRender = true` into the console or place it in your code.
