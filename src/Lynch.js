@@ -30,7 +30,7 @@ var Lynch = (function() {
   /**
    * Lynch version
    */
-  Lynch.version = "0.19.0";
+  Lynch.version = "0.20.0";
 
   /**
    * Registered Lynch components
@@ -224,6 +224,19 @@ var Lynch = (function() {
    */
   Lynch.prototype.addStyleElements = function() {
     var selector = this.selector;
+    var lynchCompName = this.element.dataset.lynchComp;
+
+    // No further execution if another component of the same type
+    // has already created the style element
+    if (
+      window.document.head.querySelector(
+        '[data-lynch-comp="' + lynchCompName + '"]'
+      )
+    ) {
+      return;
+    }
+
+    // Loop through the styles
     for (var i = 0; i < this.styles.length; i++) {
       var styleElement = window.document.createElement("style");
 
@@ -233,6 +246,9 @@ var Lynch = (function() {
           styleElement.setAttribute(attribute[0], attribute[1]);
         });
       }
+
+      // Assign the style element to the component type
+      styleElement.dataset.lynchComp = lynchCompName;
 
       // Add style element to DOM
       window.document.head.appendChild(styleElement);
