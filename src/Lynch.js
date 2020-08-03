@@ -30,7 +30,7 @@ var Lynch = (function() {
   /**
    * Lynch version
    */
-  Lynch.version = "0.20.0";
+  Lynch.version = "0.21.0";
 
   /**
    * Registered Lynch components
@@ -134,7 +134,14 @@ var Lynch = (function() {
    */
   Lynch.prototype.renderComponent = function() {
     this.element.innerHTML = this.template.call({ data: this.data });
-    if (Lynch.debug) console.log(this.selector + " rendered");
+    if (Lynch.debug) {
+      console.log(this.selector + ' rendered');
+      var colorR = Math.round(Math.random() * 255);
+      var colorG = Math.round(Math.random() * 255);
+      var colorB = Math.round(Math.random() * 255);
+      this.element.style.border =
+        '3px solid rgb(' + colorR + ', ' + colorG + ', ' + colorB + ')';
+    }
   };
 
   /**
