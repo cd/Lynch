@@ -30,7 +30,7 @@ var Lynch = (function() {
   /**
    * Lynch version
    */
-  Lynch.version = "0.21.0";
+  Lynch.version = "0.22.0";
 
   /**
    * Registered Lynch components
@@ -135,12 +135,12 @@ var Lynch = (function() {
   Lynch.prototype.renderComponent = function() {
     this.element.innerHTML = this.template.call({ data: this.data });
     if (Lynch.debug) {
-      console.log(this.selector + ' rendered');
+      console.log(this.selector + " rendered");
       var colorR = Math.round(Math.random() * 255);
       var colorG = Math.round(Math.random() * 255);
       var colorB = Math.round(Math.random() * 255);
       this.element.style.border =
-        '3px solid rgb(' + colorR + ', ' + colorG + ', ' + colorB + ')';
+        "3px solid rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
     }
   };
 
@@ -230,16 +230,18 @@ var Lynch = (function() {
    * Styling rules are subject to the scope of the component.
    */
   Lynch.prototype.addStyleElements = function() {
-    var selector = this.selector;
     var lynchCompName = this.element.dataset.lynchComp;
+
+    // Only use component name as selector.
+    // If there is no component name (because it is the root component),
+    // use the root selector.
+    var selector = lynchCompName
+      ? '[data-lynch-comp="' + lynchCompName + '"]'
+      : this.selector;
 
     // No further execution if another component of the same type
     // has already created the style element
-    if (
-      window.document.head.querySelector(
-        '[data-lynch-comp="' + lynchCompName + '"]'
-      )
-    ) {
+    if (window.document.head.querySelector(selector)) {
       return;
     }
 
